@@ -1,6 +1,6 @@
 package yhsb.base.net
 
-import yhsb.base.util.text.toByteArray
+import yhsb.base.text.toByteArray
 import java.io.ByteArrayOutputStream
 
 class HttpRequest(

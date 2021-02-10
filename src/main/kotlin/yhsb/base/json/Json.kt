@@ -1,8 +1,8 @@
-package yhsb.base.util.json
+package yhsb.base.json
 
 import com.google.gson.*
-import yhsb.base.util.structs.ListField
-import yhsb.base.util.structs.MapField
+import yhsb.base.structs.ListField
+import yhsb.base.structs.MapField
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -57,7 +57,11 @@ object Json {
 
     fun <T> fromJson(json: String, typeOfT: Type): T = gson.fromJson(json, typeOfT)
 
+    inline fun <reified T> fromJson(json: String): T = fromJson(json, T::class.java)
+
     fun <T> fromJson(element: JsonElement, typeOfT: Type): T = gson.fromJson(element, typeOfT)
+
+    inline fun <reified T> fromJson(element: JsonElement): T = fromJson(element, T::class.java)
 }
 
 abstract class Jsonable {

@@ -5,9 +5,9 @@ import com.google.gson.reflect.TypeToken
 import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
-import yhsb.base.util.json.Json
-import yhsb.base.util.json.Jsonable
-import yhsb.base.util.structs.ListField
+import yhsb.base.json.Json
+import yhsb.base.json.Jsonable
+import yhsb.base.structs.ListField
 import yhsb.cjb.net.protocol.SysLogin
 
 class Session(

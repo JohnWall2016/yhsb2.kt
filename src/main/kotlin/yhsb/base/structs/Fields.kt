@@ -1,6 +1,6 @@
-package yhsb.base.util.structs
+package yhsb.base.structs
 
-import yhsb.base.util.json.Jsonable
+import yhsb.base.json.Jsonable
 
 abstract class MapField {
     abstract fun getValueMap(): Map<String, String>

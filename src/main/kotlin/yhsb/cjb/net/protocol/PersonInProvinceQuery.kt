@@ -1,57 +1,58 @@
 package yhsb.cjb.net.protocol
 
-
 import com.google.gson.annotations.SerializedName
-import yhsb.base.util.json.Jsonable
+import yhsb.base.json.Jsonable
 import yhsb.cjb.net.Request
 
 /**
  * 省内参保信息查询
  */
-class SncbxxQuery(
+class PersonInProvinceQuery(
     @SerializedName("aac002") val idCard: String
 ) : Request("executeSncbxxConQ") {
 
-    class Item : Jsonable(), JbState, XzqhName {
+    data class Item(
         /** 个人编号  */
         @SerializedName("aac001")
-        var pid = 0
+        val pid: Int,
 
         /** 身份证号码 */
         @SerializedName("aac002")
-        var idCard: String? = null
+        val idCard: String?,
 
         @SerializedName("aac003")
-        var name: String? = null
+        val name: String,
 
         @SerializedName("aac006")
-        var birthDay: String? = null
+        val birthDay: String,
 
         @SerializedName("aac008")
-        override var cbState: CbState? = null
+        override val cbState: CbState,
 
         @SerializedName("aac031")
-        override var jfState: JfState? = null
+        override val jfState: JfState,
 
         /** 参保时间 */
         @SerializedName("aac049")
-        var cbTime = 0
+        val cbTime: Int,
 
         /** 参保身份编码 */
         @SerializedName("aac066")
-        var jbKind: JbKind? = null
+        val jbKind: JbKind,
 
         /** 社保机构 */
         @SerializedName("aaa129")
-        var agency: String? = null
+        val agency: String,
 
         /** 经办时间 */
         @SerializedName("aae036")
-        var opTime: String? = null
+        val opTime: String,
 
         /** 村组名称 */
         @SerializedName("aaf102")
-        override var czName: String? = null
+        override val czName: String,
+
+    ) : JbState, XzqhName {
 
         fun invalid(): Boolean = idCard.isNullOrEmpty()
 

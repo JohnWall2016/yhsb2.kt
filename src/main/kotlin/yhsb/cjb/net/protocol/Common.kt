@@ -2,7 +2,7 @@ package yhsb.cjb.net.protocol
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
-import yhsb.base.util.structs.MapField
+import yhsb.base.structs.MapField
 
 /**
  * 参保状态
@@ -161,4 +161,64 @@ interface XzqhName {
 
     val dwAndCsName: Pair<String, String>?
         get() = czName?.run { Xzqh.getDwAndCsName(this) }
+}
+
+class DfState() : MapField() {
+    override fun getValueMap() = mapOf(
+        "1" to "正常发放",
+        "2" to "暂停发放",
+        "3" to "终止发放",
+    )
+
+    constructor(value: String) : this() {
+        this.value = value
+    }
+}
+
+class DfType() : MapField() {
+    override fun getValueMap() = mapOf(
+        "801" to "独生子女",
+        "802" to "乡村教师",
+        "803" to "乡村医生",
+        "807" to "电影放映",
+    )
+
+    constructor(value: String) : this() {
+        this.value = value
+    }
+}
+
+/** 代发支付类型 */
+class DfPayType() : MapField() {
+    override fun getValueMap() = mapOf(
+        "DF0001" to "独生子女",
+        "DF0002" to "乡村教师",
+        "DF0003" to "乡村医生",
+        "DF0007" to "电影放映员",
+    )
+
+    constructor(value: String): this() {
+        this.value = value
+    }
+}
+
+class BankType : MapField() {
+    override fun getValueMap() = mapOf(
+        "LY" to "中国农业银行",
+        "ZG" to "中国银行",
+        "JS" to "中国建设银行",
+        "NH" to "农村信用合作社",
+        "YZ" to "邮政",
+        "JT" to "交通银行",
+        "GS" to "中国工商银行",
+    )
+}
+
+/** 支付业务类型 */
+class PayType : MapField() {
+    override fun getValueMap() = mapOf(
+        "F10004" to "重复缴费退费",
+        "F10006" to "享受终止退保",
+        "F10007" to "缴费调整退款",
+    )
 }

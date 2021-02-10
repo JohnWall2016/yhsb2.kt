@@ -1,6 +1,6 @@
 package yhsb.base.net
 
-import yhsb.base.util.text.*
+import yhsb.base.text.*
 import java.io.ByteArrayOutputStream
 import java.io.Closeable
 import java.io.OutputStream
