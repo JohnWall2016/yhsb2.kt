@@ -222,3 +222,45 @@ class PayType : MapField() {
         "F10007" to "缴费调整退款",
     )
 }
+
+/** 终止参保原因 */
+class StopReason : MapField() {
+    override fun getValueMap() = mapOf(
+        "1401" to "死亡",
+        "1406" to "出外定居",
+        "1407" to "参加职保",
+        "1499" to "其他原因",
+        "6401" to "死亡",
+        "6406" to "出外定居",
+        "6407" to "参加职保",
+        "6499" to "其他原因",
+    )
+}
+
+/** 缴费类型 */
+class JfType : MapField() {
+    override fun getValueMap() = mapOf(
+        "10" to "正常应缴",
+        "31" to "补缴",
+    )
+}
+
+/** 缴费项目 */
+class JfItem : MapField() {
+    override fun getValueMap() = mapOf(
+        "1" to "个人缴费",
+        "3" to "省级财政补贴",
+        "4" to "市级财政补贴",
+        "5" to "县级财政补贴",
+        "11" to "政府代缴",
+        "15" to "退捕渔民补助",
+    )
+}
+
+/** 缴费方式 */
+class JfMethod : MapField() {
+    override fun getValueMap() = mapOf(
+        "2" to "银行代收",
+        "3" to "经办机构自收",
+    )
+}

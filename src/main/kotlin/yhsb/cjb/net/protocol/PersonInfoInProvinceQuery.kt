@@ -7,7 +7,7 @@ import yhsb.cjb.net.Request
 /**
  * 省内参保信息查询
  */
-class PersonInProvinceQuery(
+class PersonInfoInProvinceQuery(
     @SerializedName("aac002") val idCard: String
 ) : Request("executeSncbxxConQ") {
 
