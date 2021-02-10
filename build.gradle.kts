@@ -1,0 +1,20 @@
+plugins {
+    kotlin("jvm") version "1.4.10"
+}
+
+group = "org.example"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    maven { setUrl("https://maven.aliyun.com/nexus/content/groups/public/") }
+    maven { setUrl("https://maven.aliyun.com/nexus/content/repositories/jcenter") }
+    mavenCentral()
+}
+
+dependencies {
+    implementation(kotlin("stdlib"))
+    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.typesafe:config:1.4.0")
+    implementation("com.google.guava:guava:30.1-jre")
+    testImplementation(kotlin("script-runtime"))
+}
