@@ -13,7 +13,7 @@ object Config {
         }
     }
 
-    val jbSession = load("cjb.session")
+    val cjbSession = load("cjb.session")
 
     val qbSession = load("qb.session")
 }

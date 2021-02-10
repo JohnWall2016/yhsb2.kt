@@ -4,9 +4,11 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
+import yhsb.base.util.Config
 import yhsb.base.util.json.Json
 import yhsb.base.util.json.Jsonable
 import yhsb.base.util.structs.ListField
+import yhsb.cjb.net.protocol.SysLogin
 
 class Session(
     host: String,
@@ -14,9 +16,9 @@ class Session(
     private val userId: String,
     private val password: String
 ) : HttpSocket(host, port) {
-    val cookies = mutableMapOf<String, String>()
+    private val cookies = mutableMapOf<String, String>()
 
-    fun createRequest(): HttpRequest = HttpRequest("/hncjb/reports/crud", "POST").apply {
+    private fun createRequest(): HttpRequest = HttpRequest("/hncjb/reports/crud", "POST").apply {
         addHeader("Host", url)
         addHeader("Accept", "application/json, text/javascript, */*; q=0.01")
         addHeader("Origin", "http://$url")
@@ -40,11 +42,11 @@ class Session(
         }
     }
 
-    fun buildRequest(content: String) = createRequest().apply {
+    private fun buildRequest(content: String) = createRequest().apply {
         addBody(content)
     }
 
-    fun request(content: String) {
+    private fun request(content: String) {
         val request = buildRequest(content)
         write(request.toByteArray())
     }
@@ -65,8 +67,55 @@ class Session(
         return Result.fromJson(result, classOfT)
     }
 
+    inline fun <reified T : Jsonable> getResult(): Result<T> = getResult(T::class.java)
+
+    fun login(): String {
+        sendService("loadCurrentUser")
+
+        val header = readHeader()
+        if (header.containsKey("set-cookie")) {
+            header["set-cookie"]?.forEach {
+                val r = Regex("([^=]+?)=(.+?);")
+                val m = r.find(it)
+                if (m != null) {
+                    cookies[m.groupValues[1]] = m.groupValues[2]
+                }
+            }
+        }
+        readBody(header)
+
+        sendService(SysLogin(userId, password))
+        return readBody()
+    }
+
+    fun logout(): String {
+        sendService("syslogout")
+        return readBody()
+    }
+
     companion object {
         fun <T : Jsonable> fromJson(json: String, classOfT: Class<T>): Result<T> = Result.fromJson(json, classOfT)
+
+        fun <T> use(
+            user: String = "002",
+            autoLogin: Boolean = true,
+            func: Session.() -> T
+        ) {
+            val user = Config.cjbSession.getConfig("users.$user")
+            Session(
+                Config.cjbSession.getString("host"),
+                Config.cjbSession.getInt("port"),
+                user.getString("id"),
+                user.getString("pwd")
+            ).use {
+                if (autoLogin) it.login()
+                try {
+                    it.func()
+                } finally {
+                    if (autoLogin) it.logout()
+                }
+            }
+        }
     }
 }
 
