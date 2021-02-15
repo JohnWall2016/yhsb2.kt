@@ -3,7 +3,6 @@ package yhsb.cjb.net.protocol
 import com.google.gson.annotations.SerializedName
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
-import yhsb.cjb.net.PageRequest
 import java.math.BigDecimal
 import java.net.URLEncoder
 

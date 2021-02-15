@@ -1,7 +1,6 @@
 package yhsb.cjb.net.protocol
 
 import com.google.gson.annotations.SerializedName
-import yhsb.cjb.net.PageRequest
 
 /** 个人信息综合查询 */
 class PersonInfoQuery(

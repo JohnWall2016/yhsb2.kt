@@ -1,7 +1,6 @@
 package yhsb.cjb.net.protocol
 
 import com.google.gson.annotations.SerializedName
-import yhsb.cjb.net.Request
 
 /** 缴费人员终止审核个人信息查询 */
 class PayingPersonStopAuditDetailQuery(

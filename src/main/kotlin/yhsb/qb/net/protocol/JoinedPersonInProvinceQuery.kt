@@ -4,7 +4,7 @@ import yhsb.base.xml.Attribute
 import yhsb.base.xml.ToXml
 
 /** 省内参保人员查询 */
-class InProvincePersonQuery(
+class JoinedPersonInProvinceQuery(
     idCard: String
 ) : ClientSql(
     "F00.01.03",

@@ -1,7 +1,6 @@
 package yhsb.cjb.net.protocol
 
 import com.google.gson.annotations.SerializedName
-import yhsb.cjb.net.PageRequest
 
 /** 参保审核查询 */
 class JoinAuditQuery(

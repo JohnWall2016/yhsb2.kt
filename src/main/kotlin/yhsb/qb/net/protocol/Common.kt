@@ -35,3 +35,9 @@ class BookMark : MapField() {
         "1" to "已记账",
     )
 }
+
+interface CompanyInfo {
+    val companyName: String
+    val companyCode: String
+}
+

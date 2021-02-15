@@ -1,8 +1,6 @@
 package yhsb.cjb.net.protocol
 
 import com.google.gson.annotations.SerializedName
-import yhsb.base.json.Jsonable
-import yhsb.cjb.net.Request
 
 /**
  * 省内参保信息查询

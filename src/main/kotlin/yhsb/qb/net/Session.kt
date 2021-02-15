@@ -1,6 +1,5 @@
 package yhsb.qb.net
 
-import org.w3c.dom.Element
 import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
 import yhsb.base.reflect.GenericClass

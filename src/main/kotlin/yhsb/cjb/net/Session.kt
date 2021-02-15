@@ -1,13 +1,11 @@
 package yhsb.cjb.net
 
-import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import yhsb.base.net.HttpRequest
 import yhsb.base.net.HttpSocket
 import yhsb.base.util.Config
-import yhsb.base.json.Json
 import yhsb.base.json.Jsonable
-import yhsb.base.structs.ListField
+import yhsb.cjb.net.protocol.JsonService
+import yhsb.cjb.net.protocol.Request
 import yhsb.cjb.net.protocol.SysLogin
 
 class Session(
@@ -62,12 +60,12 @@ class Session(
 
     fun sendService(id: String) = request(toService(id))
 
-    fun <T : Jsonable> getResult(classOfT: Class<T>): Result<T> {
+    fun <T : Jsonable> getResult(classOfT: Class<T>): yhsb.cjb.net.protocol.Result<T> {
         val result = readBody()
-        return Result.fromJson(result, classOfT)
+        return yhsb.cjb.net.protocol.Result.fromJson(result, classOfT)
     }
 
-    inline fun <reified T : Jsonable> getResult(): Result<T> = getResult(T::class.java)
+    inline fun <reified T : Jsonable> getResult(): yhsb.cjb.net.protocol.Result<T> = getResult(T::class.java)
 
     fun login(): String {
         sendService("loadCurrentUser")
@@ -94,7 +92,8 @@ class Session(
     }
 
     companion object {
-        fun <T : Jsonable> fromJson(json: String, classOfT: Class<T>): Result<T> = Result.fromJson(json, classOfT)
+        fun <T : Jsonable> fromJson(json: String, classOfT: Class<T>): yhsb.cjb.net.protocol.Result<T> =
+            yhsb.cjb.net.protocol.Result.fromJson(json, classOfT)
 
         fun <T> use(
             user: String = "002",
@@ -114,110 +113,6 @@ class Session(
                 } finally {
                     if (autoLogin) it.logout()
                 }
-            }
-        }
-    }
-}
-
-open class Request(@Transient val id: String) : Jsonable()
-
-open class PageRequest(
-    id: String,
-    page: Int = 1,
-    pageSize: Int = 15,
-    filtering: Map<String, String>? = null,
-    sorting: Map<String, String>? = null,
-    totals: Map<String, String>? = null
-) : Request(id) {
-    val page = page
-
-    @SerializedName("pagesize")
-    val pageSize = pageSize
-
-    val filtering: List<Map<String, String>> =
-        if (filtering != null) listOf(filtering) else listOf()
-
-    val sorting: List<Map<String, String>> =
-        if (sorting != null) listOf(sorting) else listOf()
-
-    val totals: List<Map<String, String>> =
-        if (totals != null) listOf(totals) else listOf()
-}
-
-class JsonService<T : Request>(
-    params: T,
-    userId: String,
-    password: String
-) : Jsonable() {
-    @SerializedName("serviceid")
-    val serviceId = params.id
-
-    val target = ""
-
-    @SerializedName("sessionid")
-    val sessionId = null
-
-    @SerializedName("loginname")
-    val loginName = userId
-
-    val password = password
-
-    val params = params
-
-    @SerializedName("datas")
-    val data = listOf<T>(params)
-}
-
-class Result<T : Jsonable> : Jsonable(), Iterable<T> {
-    @SerializedName("rowcount")
-    var rowCount = 0
-
-    var page = 0
-
-    @SerializedName("pagesize")
-    var pageSize = 0
-
-    @SerializedName("serviceid")
-    var serviceId = ""
-
-    var type = ""
-
-    var vcode = ""
-
-    var message = ""
-
-    @SerializedName("messagedetail")
-    var messageDetail = ""
-
-    @SerializedName("datas")
-    var data: ListField<T>? = null
-
-    fun add(d: T) {
-        data?.add(d)
-    }
-
-    operator fun get(index: Int) = data?.get(index)
-
-    fun size() = data?.size()
-
-    fun isEmpty() = data?.isEmpty() ?: true
-
-    override fun iterator() = (data ?: listOf()).iterator()
-
-    @Transient
-    var json: String? = null
-
-    companion object {
-        fun <T : Jsonable> fromJson(json: String, classOfT: Class<T>): Result<T> {
-            try {
-                val typeOf = TypeToken
-                    .getParameterized(Result::class.java, classOfT)
-                    .type
-                val result = Json.fromJson<Result<T>>(json, typeOf)
-                result.json = json
-                return result
-            } catch (ex: Exception) {
-                throw Exception("Parse Json Exception: $json", ex)
             }
         }
     }

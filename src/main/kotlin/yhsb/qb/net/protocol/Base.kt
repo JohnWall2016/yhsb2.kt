@@ -251,7 +251,7 @@ class ParaList(
     }
 }
 
-class ParamList(
+open class ParamList(
     funId: String,
     attrs: LinkedHashMap<String, String>,
     paraList: LinkedHashMap<String, String>

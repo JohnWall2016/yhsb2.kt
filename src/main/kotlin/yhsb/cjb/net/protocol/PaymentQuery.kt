@@ -1,7 +1,6 @@
 package yhsb.cjb.net.protocol
 
 import com.google.gson.annotations.SerializedName
-import yhsb.cjb.net.PageRequest
 
 /** 财务支付管理查询 */
 class PaymentQuery(
