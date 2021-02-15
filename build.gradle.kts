@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.typesafe:config:1.4.0")
     implementation("com.google.guava:guava:30.1-jre")
@@ -20,4 +21,6 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:4.1.2")
     implementation("info.picocli:picocli:4.5.2")
     testImplementation(kotlin("script-runtime"))
+    testImplementation(kotlin("stdlib"))
+    testImplementation(kotlin("reflect"))
 }

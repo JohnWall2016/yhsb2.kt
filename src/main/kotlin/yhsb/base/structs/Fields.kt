@@ -1,6 +1,7 @@
 package yhsb.base.structs
 
 import yhsb.base.json.Jsonable
+import kotlin.reflect.full.createType
 
 abstract class MapField {
     abstract fun getValueMap(): Map<String, String>
@@ -10,6 +11,10 @@ abstract class MapField {
     val name: String get() = getValueMap().getOrDefault(value, "未知值: $value")
 
     override fun toString() = name
+
+    companion object {
+        val type = MapField::class.createType()
+    }
 }
 
 class ListField<T : Jsonable> : Iterable<T> {
