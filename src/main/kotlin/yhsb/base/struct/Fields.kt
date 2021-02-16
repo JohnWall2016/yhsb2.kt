@@ -1,4 +1,4 @@
-package yhsb.base.structs
+package yhsb.base.struct
 
 import yhsb.base.json.Jsonable
 import kotlin.reflect.full.createType

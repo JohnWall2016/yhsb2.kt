@@ -1,6 +1,6 @@
 package yhsb.qb.net.protocol
 
-import yhsb.base.structs.MapField
+import yhsb.base.struct.MapField
 
 /** 社保状态 */
 class SbState : MapField() {

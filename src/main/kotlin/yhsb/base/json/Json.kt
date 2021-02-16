@@ -1,8 +1,8 @@
 package yhsb.base.json
 
 import com.google.gson.*
-import yhsb.base.structs.ListField
-import yhsb.base.structs.MapField
+import yhsb.base.struct.ListField
+import yhsb.base.struct.MapField
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 

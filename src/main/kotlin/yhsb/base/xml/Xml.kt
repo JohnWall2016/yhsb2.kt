@@ -7,7 +7,7 @@ import org.w3c.dom.Document as XmlDocument
 import org.xml.sax.InputSource
 import yhsb.base.reflect.GenericClass
 import yhsb.base.reflect.getAnnotation
-import yhsb.base.structs.MapField
+import yhsb.base.struct.MapField
 import java.io.StringReader
 import java.io.StringWriter
 import java.lang.reflect.Field

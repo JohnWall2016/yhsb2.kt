@@ -1,6 +1,6 @@
 package yhsb.base.net
 
-import yhsb.base.collections.MapEntry
+import yhsb.base.collection.MapEntry
 
 class HttpHeader : Iterable<Map.Entry<String, String>> {
     private val header = mutableMapOf<String, MutableList<String>>()

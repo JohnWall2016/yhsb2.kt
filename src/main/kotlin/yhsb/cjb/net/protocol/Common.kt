@@ -2,7 +2,7 @@ package yhsb.cjb.net.protocol
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
-import yhsb.base.structs.MapField
+import yhsb.base.struct.MapField
 
 /**
  * 参保状态

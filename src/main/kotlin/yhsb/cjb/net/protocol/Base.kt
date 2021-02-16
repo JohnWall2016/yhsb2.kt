@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import yhsb.base.json.Json
 import yhsb.base.json.Jsonable
-import yhsb.base.structs.ListField
+import yhsb.base.struct.ListField
 
 
 open class Request(@Transient val id: String) : Jsonable()
