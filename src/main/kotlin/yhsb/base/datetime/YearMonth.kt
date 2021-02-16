@@ -8,7 +8,7 @@ class YearMonth(
     val month: Int
 ) : Comparable<YearMonth> {
     init {
-        require(month < 1 || month > 12) { "The month must be >= 1 and <=12" }
+        require(month >= 1 && month <= 12) { "The month must be >= 1 and <=12" }
     }
 
     fun offset(months: Int): YearMonth {
@@ -54,7 +54,7 @@ class YearMonthRange(
     val end: YearMonth
 ) {
     init {
-        require(start > end) { "start must be less than or equal end" }
+        require(start <= end) { "start must be less than or equal end" }
     }
 
     operator fun minus(other: YearMonthRange): LinkedNode<YearMonthRange> {
