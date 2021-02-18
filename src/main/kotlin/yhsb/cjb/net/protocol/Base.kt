@@ -56,7 +56,7 @@ class JsonService<T : Request>(
     val data = listOf<T>(params)
 }
 
-class Result<T : Jsonable> : Jsonable(), Iterable<T> {
+class Result<T : Any> : Jsonable(), Iterable<T> {
     @SerializedName("rowcount")
     var rowCount = 0
 
@@ -96,17 +96,13 @@ class Result<T : Jsonable> : Jsonable(), Iterable<T> {
     var json: String? = null
 
     companion object {
-        fun <T : Jsonable> fromJson(json: String, classOfT: Class<T>): Result<T> {
-            try {
-                val typeOf = TypeToken
-                    .getParameterized(Result::class.java, classOfT)
-                    .type
-                val result = Json.fromJson<Result<T>>(json, typeOf)
-                result.json = json
-                return result
-            } catch (ex: Exception) {
-                throw Exception("Parse Json Exception: $json", ex)
-            }
+        fun <T : Any> fromJson(json: String, classOfT: Class<T>): Result<T> {
+            val typeOf = TypeToken
+                .getParameterized(Result::class.java, classOfT)
+                .type
+            val result = Json.fromJson<Result<T>>(json, typeOf)
+            result.json = json
+            return result
         }
     }
 }

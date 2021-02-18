@@ -1,5 +1,6 @@
 package yhsb.base.struct
 
+import yhsb.base.json.Json
 import yhsb.base.json.Jsonable
 import kotlin.reflect.full.createType
 
@@ -17,7 +18,7 @@ abstract class MapField {
     }
 }
 
-class ListField<T : Jsonable> : Iterable<T> {
+class ListField<T : Any> : Iterable<T> {
     val items = mutableListOf<T>()
 
     override fun iterator(): Iterator<T> = items.iterator()

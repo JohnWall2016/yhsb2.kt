@@ -304,11 +304,11 @@ fun <T> updateField(obj: T, field: Field, value: String?) {
         val v = type.getConstructor().newInstance() as MapField
         v.value = value ?: ""
         field.set(obj, v)
-    } else if (type == Int::class.java) {
+    } else if (type == Int::class.java || type == java.lang.Integer::class.java) {
         field.set(obj, value?.toInt())
-    } else if (type == BigDecimal::class.java) {
+    } else if (type == BigDecimal::class.java || type == java.math.BigDecimal::class.java) {
         field.set(obj, value?.toBigDecimal())
-    } else {
+    } else if (type == String::class.java || type == java.lang.String::class.java) {
         field.set(obj, value)
     }
 }

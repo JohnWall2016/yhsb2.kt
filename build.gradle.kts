@@ -21,6 +21,4 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:4.1.2")
     implementation("info.picocli:picocli:4.5.2")
     testImplementation(kotlin("script-runtime"))
-    testImplementation(kotlin("stdlib"))
-    testImplementation(kotlin("reflect"))
 }

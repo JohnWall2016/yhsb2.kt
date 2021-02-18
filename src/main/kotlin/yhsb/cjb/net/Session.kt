@@ -51,7 +51,7 @@ class Session(
 
     fun toService(request: Request): String {
         val service = JsonService(request, userId, password)
-        return service.toString()
+        return service.toJson()
     }
 
     fun toService(id: String): String = toService(Request(id))
@@ -60,12 +60,12 @@ class Session(
 
     fun sendService(id: String) = request(toService(id))
 
-    fun <T : Jsonable> getResult(classOfT: Class<T>): yhsb.cjb.net.protocol.Result<T> {
+    fun <T : Any> getResult(classOfT: Class<T>): yhsb.cjb.net.protocol.Result<T> {
         val result = readBody()
         return yhsb.cjb.net.protocol.Result.fromJson(result, classOfT)
     }
 
-    inline fun <reified T : Jsonable> getResult(): yhsb.cjb.net.protocol.Result<T> = getResult(T::class.java)
+    inline fun <reified T : Any> getResult(): yhsb.cjb.net.protocol.Result<T> = getResult(T::class.java)
 
     fun login(): String {
         sendService("loadCurrentUser")

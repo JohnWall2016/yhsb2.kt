@@ -11,7 +11,7 @@ class JoinedPersonInProvinceQuery(
     "F27.06",
     "( aac002 = &apos;$idCard&apos;)"
 ) {
-    class Item(
+    data class Item(
         /** 个人编号 */
         @Attribute("sac100")
         val pid: String,

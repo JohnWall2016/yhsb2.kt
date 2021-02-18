@@ -16,7 +16,7 @@ class RetiredPersonQuery(
     @AttrNode("para", "aab034")
     val agencyCode = agencyCode
 
-    class Item(
+    data class Item(
         @Attribute("aab004")
         val companyName: String,
 

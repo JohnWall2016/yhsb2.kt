@@ -108,12 +108,12 @@ class OutBody<T>(
     val result: OutBusiness<T>
 )
 
-class OutBusiness<T>(
+data class OutBusiness<T>(
     @AttrNode("result", "result")
     val result: String,
 
     @AttrNode("result", "row_count")
-    val rowCount: Int,
+    val rowCount: Int?,
 
     @AttrNode("result", "querysql")
     val querySql: String,
@@ -148,7 +148,7 @@ class Result(
     val querySql: String
 )
 
-class ResultSet<T>(
+data class ResultSet<T>(
     @Attribute("name")
     val name: String,
 

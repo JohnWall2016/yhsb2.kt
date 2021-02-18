@@ -56,7 +56,9 @@ class Session(
 
     companion object {
         fun toService(request: ToXml): String {
-            return request.toXml()
+            val req = request.toXml()
+            // println(req)
+            return req
         }
 
         fun <T : Any> fromXml(xml: String, classOfT: Class<T>, argClass: Class<*>): T {
