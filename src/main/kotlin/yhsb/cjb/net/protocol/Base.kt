@@ -90,6 +90,8 @@ class Result<T : Any> : Jsonable(), Iterable<T> {
 
     fun isEmpty() = data?.isEmpty() ?: true
 
+    fun isNotEmpty() = !isEmpty()
+
     override fun iterator() = (data ?: listOf()).iterator()
 
     @Transient

@@ -99,9 +99,9 @@ class Session(
             user: String = "002",
             autoLogin: Boolean = true,
             func: Session.() -> T
-        ) {
+        ): T {
             val user = Config.cjbSession.getConfig("users.$user")
-            Session(
+            return Session(
                 Config.cjbSession.getString("host"),
                 Config.cjbSession.getInt("port"),
                 user.getString("id"),
