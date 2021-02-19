@@ -8,6 +8,8 @@ import yhsb.base.text.fillRight
 import yhsb.base.text.insertBeforeLastSubstring
 import yhsb.cjb.net.protocol.PersonInfoInProvinceQuery
 import yhsb.cjb.net.Session
+import yhsb.cjb.net.protocol.getPauseInfoByIdCard
+import yhsb.cjb.net.protocol.getStopInfoByIdCard
 
 @CommandLine.Command(
     description = ["城居保信息查询和更新程序"],
@@ -50,15 +52,23 @@ class Fetch : CommandWithHelp() {
                         } else {
                             val p = result.first()
                             println("${p.idCard} ${p.name} ${p.jbState} ${p.dwName} ${p.csName}")
-                            if (detail) {
-                                when (p.cbState.value) {
+                            if (!detail) {
+                                println("${p.idCard} ${p.name} ${p.jbState} ${p.dwName} ${p.csName}")
+                            } else {
+                                val info = when (p.cbState.value) {
                                     "2" -> { // 暂停参保
-                                        TODO()
+                                        getPauseInfoByIdCard(idCard)?.let {
+                                            "暂停参保(${it.reason}, ${it.yearMonth}, ${it.memo})"
+                                        } ?: ""
                                     }
                                     "4" -> { // 终止参保
-                                        TODO()
+                                        getStopInfoByIdCard(idCard)?.let {
+                                            "终止参保(${it.reason}, ${it.yearMonth}, ${it.memo})"
+                                        } ?: ""
                                     }
+                                    else -> ""
                                 }
+                                println("${p.idCard} ${p.name} ${p.jbState} ${p.dwName} ${p.csName} $info")
                             }
                         }
                     }

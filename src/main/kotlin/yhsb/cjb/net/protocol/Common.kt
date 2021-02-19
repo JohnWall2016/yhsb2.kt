@@ -277,7 +277,7 @@ class JfMethod : MapField() {
 class PauseInfo(
     val reason: String,
     val yearMonth: String,
-    val auditTime: String,
+    val auditDate: String,
     val memo: String
 )
 
@@ -285,10 +285,74 @@ class PauseInfo(
 class StopInfo(
     val reason: String,
     val yearMonth: String,
-    val auditTime: String,
+    val auditDate: String,
     val memo: String
 )
 
-fun Session.getPauseInfoByIdCard() {
-    TODO()
+fun Session.getPauseInfoByIdCard(idCard: String): PauseInfo? {
+    sendService(RetirePersonPauseAuditQuery(idCard))
+    val rpResult = getResult<RetirePersonPauseAuditQuery.Item>()
+    if (rpResult.isNotEmpty()) {
+        return rpResult.first().let {
+            PauseInfo(
+                it.reason.toString(),
+                it.pauseYearMonth.toString(),
+                it.auditDate,
+                it.memo
+            )
+        }
+    } else {
+        sendService(PayingPersonPauseAuditQuery(idCard))
+        val ppResult = getResult<PayingPersonPauseAuditQuery.Item>()
+        if (ppResult.isNotEmpty()) {
+            return ppResult.first().let {
+                PauseInfo(
+                    it.reason.toString(),
+                    it.pauseYearMonth,
+                    it.auditDate,
+                    it.memo
+                )
+            }
+        }
+    }
+    return null
+}
+
+fun Session.getStopInfoByIdCard(idCard: String): StopInfo? {
+    sendService(RetiredPersonStopAuditQuery(idCard))
+    val rpResult = getResult<RetiredPersonStopAuditQuery.Item>()
+    if (rpResult.isNotEmpty()) {
+        val item = rpResult.first()
+        sendService(RetirePersonStopAuditDetailQuery(item))
+        val dtResult = getResult<RetirePersonStopAuditDetailQuery.Item>()
+        if (dtResult.isNotEmpty()) {
+            return dtResult.first().let {
+                StopInfo(
+                    it.reason.toString(),
+                    item.stopYearMonth,
+                    item.auditDate,
+                    item.memo
+                )
+            }
+        }
+    } else {
+        sendService(PayingPersonStopAuditQuery(idCard))
+        val ppResult = getResult<PayingPersonStopAuditQuery.Item>()
+        if (ppResult.isNotEmpty()) {
+            val item = ppResult.first()
+            sendService(PayingPersonStopAuditDetailQuery(item))
+            val dtResult = getResult<PayingPersonStopAuditDetailQuery.Item>()
+            if (dtResult.isNotEmpty()) {
+                return dtResult.first().let {
+                    StopInfo(
+                        it.reason.toString(),
+                        item.stopYearMonth,
+                        item.auditDate,
+                        item.memo
+                    )
+                }
+            }
+        }
+    }
+    return null
 }

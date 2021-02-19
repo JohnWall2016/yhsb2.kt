@@ -39,6 +39,10 @@ class RetiredPersonStopAuditQuery(
         /** 审核日期 */
         @SerializedName("aae015")
         val auditDate: String,
+
+        /** 备注? */
+        @SerializedName("aae013")
+        val memo: String,
     
         val aaz176: Int,
     )
