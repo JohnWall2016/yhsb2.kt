@@ -36,6 +36,9 @@ class Fetch : CommandWithHelp() {
         @CommandLine.Parameters(description = ["身份证号码"])
         private var idCards: Array<String>? = null
 
+        @CommandLine.Option(names = ["-d", "--detail"], description = ["是否显示详细情况"])
+        private var detail = false
+
         override fun run() {
             if (idCards != null) {
                 Session.use {
@@ -47,6 +50,16 @@ class Fetch : CommandWithHelp() {
                         } else {
                             val p = result.first()
                             println("${p.idCard} ${p.name} ${p.jbState} ${p.dwName} ${p.csName}")
+                            if (detail) {
+                                when (p.cbState.value) {
+                                    "2" -> { // 暂停参保
+                                        TODO()
+                                    }
+                                    "4" -> { // 终止参保
+                                        TODO()
+                                    }
+                                }
+                            }
                         }
                     }
                 }

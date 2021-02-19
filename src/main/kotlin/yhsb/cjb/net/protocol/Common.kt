@@ -3,6 +3,7 @@ package yhsb.cjb.net.protocol
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import yhsb.base.struct.MapField
+import yhsb.cjb.net.Session
 
 /**
  * 参保状态
@@ -271,4 +272,23 @@ class JfMethod : MapField() {
         "2" to "银行代收",
         "3" to "经办机构自收",
     )
+}
+
+class PauseInfo(
+    val reason: String,
+    val yearMonth: String,
+    val auditTime: String,
+    val memo: String
+)
+
+
+class StopInfo(
+    val reason: String,
+    val yearMonth: String,
+    val auditTime: String,
+    val memo: String
+)
+
+fun Session.getPauseInfoByIdCard() {
+    TODO()
 }
