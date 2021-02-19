@@ -32,8 +32,10 @@ dependencies {
     testImplementation(kotlin("script-runtime"))
 }
 
+
 task("cjb.audit", JavaExec::class) {
     dependsOn("classes")
     main = "yhsb.cjb.app.Audit"
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
     classpath = sourceSets["main"].runtimeClasspath
 }

@@ -11,7 +11,7 @@ object DateTime {
         if (m != null) {
             return "${m.groupValues[1]}-${m.groupValues[2]}-${m.groupValues[3]}"
         } else {
-            throw IllegalArgumentException("Invalid date format: $format")
+            throw IllegalArgumentException("Invalid date format($format): $date")
         }
     }
 
