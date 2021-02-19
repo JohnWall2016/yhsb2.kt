@@ -82,7 +82,7 @@ fun Process.consumeProcessErrorStream(err: OutputStream): Thread {
     return thread
 }
 
-if (args.isNotEmpty()) {
+if (args.isNotEmpty() && args.first() != "--help") {
     val task = args.first()
     val argument =
         if (args.size > 1) {
@@ -93,5 +93,11 @@ if (args.isNotEmpty()) {
         "gradlew.bat -q $task $argument"
     } else {
         "./gradlew -q $task $argument"
+    }.execute().waitForProcessOutput(System.out, System.err)
+} else {
+    if (System.getProperty("os.name").startsWith("Windows")) {
+        "gradlew.bat -q list"
+    } else {
+        "./gradlew -q list"
     }.execute().waitForProcessOutput(System.out, System.err)
 }

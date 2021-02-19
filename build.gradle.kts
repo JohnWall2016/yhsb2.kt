@@ -49,8 +49,14 @@ execTask("cjb.audit", "参保审核与参保身份变更程序") {
     main = "yhsb.cjb.app.Audit"
 }
 
+execTask("cjb.fetch", "城居保信息查询和更新程序") {
+    main = "yhsb.cjb.app.Fetch"
+}
+
 task("list") {
-    execTasks.forEach { (name, desc) ->
-        println("${name.padEnd(14)}$desc")
+    doLast {
+        execTasks.forEach { (name, desc) ->
+            println("${name.padEnd(12)}$desc")
+        }
     }
 }

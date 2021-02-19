@@ -207,7 +207,7 @@ fun Row.getOrCreateCell(column: Int): Cell {
 
 fun Row.getOrCreateCell(columnName: String): Cell = getOrCreateCell(CellRef.columnNameToNumber(columnName) - 1)
 
-fun Cell?.getValue() = if (this == null) "" else getString(cellType)
+fun Cell?.getValue() = this?.getString(cellType) ?: ""
 
 fun Cell.getString(type: CellType): String {
     return when (type) {

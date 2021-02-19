@@ -237,6 +237,14 @@ class StopReason : MapField() {
     )
 }
 
+/** 暂停参保原因 */
+class PauseReason : MapField() {
+    override fun getValueMap() = mapOf(
+        "1201" to "养老待遇享受人员未提供生存证明",
+        "6399" to "其他原因中断缴费",
+    )
+}
+
 /** 缴费类型 */
 class JfType : MapField() {
     override fun getValueMap() = mapOf(
