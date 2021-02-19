@@ -82,7 +82,7 @@ fun Process.consumeProcessErrorStream(err: OutputStream): Thread {
     return thread
 }
 
-if (args.size > 0) {
+if (args.isNotEmpty()) {
     val task = args.first()
     val argument =
         if (args.size > 1) {
