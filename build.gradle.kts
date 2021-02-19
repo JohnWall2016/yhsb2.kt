@@ -32,10 +32,25 @@ dependencies {
     testImplementation(kotlin("script-runtime"))
 }
 
+val execTasks = LinkedHashMap<String, String>()
 
-task("cjb.audit", JavaExec::class) {
-    dependsOn("classes")
+fun execTask(name: String, description: String, configuration: JavaExec.() -> Unit) {
+    execTasks[name] = description
+
+    task(name, JavaExec::class) {
+        dependsOn("classes")
+        jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+        classpath = sourceSets["main"].runtimeClasspath
+        configuration()
+    }
+}
+
+execTask("cjb.audit", "参保审核与参保身份变更程序") {
     main = "yhsb.cjb.app.Audit"
-    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
-    classpath = sourceSets["main"].runtimeClasspath
+}
+
+task("list") {
+    execTasks.forEach { (name, desc) ->
+        println("${name.padEnd(14)}$desc")
+    }
 }
