@@ -283,17 +283,13 @@ class AuditState : MapField() {
     )
 }
 
-enum class CeaseType {
-    PayingPause, RetiredPause, PayingStop, RetiredStop;
+enum class CeaseType(private val nameCh: String) {
+    PayingPause("缴费暂停"),
+    RetiredPause("待遇暂停"),
+    PayingStop("缴费终止"),
+    RetiredStop("待遇终止");
 
-    override fun toString(): String {
-        return when (this) {
-            PayingPause -> "缴费暂停"
-            RetiredPause -> "待遇暂停"
-            PayingStop -> "缴费终止"
-            RetiredStop -> "待遇终止"
-        }
-    }
+    override fun toString() = nameCh
 }
 
 data class CeaseInfo(
