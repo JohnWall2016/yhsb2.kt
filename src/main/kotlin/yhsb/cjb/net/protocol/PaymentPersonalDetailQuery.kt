@@ -17,6 +17,13 @@ class PaymentPersonalDetailQuery(
         "aggregate" to "sum"
     )
 ) {
+    constructor(item: PaymentQuery.Item) : this(
+        item.payList.toString(),
+        item.yearMonth.toString(),
+        item.state,
+        item.type.value
+    )
+
     val aaf015 = ""
 
     @SerializedName("aac002")

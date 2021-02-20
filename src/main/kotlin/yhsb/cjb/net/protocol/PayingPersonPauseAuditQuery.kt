@@ -45,7 +45,10 @@ class PayingPersonPauseAuditQuery(
 
         /** 审核日期 */
         @SerializedName("aae015")
-        val auditDate: String,
+        val auditDate: String?,
+
+        @SerializedName("aae016")
+        val auditState: AuditState,
 
         /** 村组名称 */
         @SerializedName("aaf102")

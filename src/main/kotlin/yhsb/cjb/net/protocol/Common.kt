@@ -198,7 +198,7 @@ class DfPayType() : MapField() {
         "DF0007" to "电影放映员",
     )
 
-    constructor(value: String): this() {
+    constructor(value: String) : this() {
         this.value = value
     }
 }
@@ -242,6 +242,7 @@ class StopReason : MapField() {
 class PauseReason : MapField() {
     override fun getValueMap() = mapOf(
         "1201" to "养老待遇享受人员未提供生存证明",
+        "1299" to "其他原因暂停养老待遇",
         "6399" to "其他原因中断缴费",
     )
 }
@@ -274,29 +275,48 @@ class JfMethod : MapField() {
     )
 }
 
-class PauseInfo(
+/** 审核状态 */
+class AuditState : MapField() {
+    override fun getValueMap() = mapOf(
+        "0" to "未审核",
+        "1" to "审核通过"
+    )
+}
+
+enum class CeaseType {
+    PayingPause, RetiredPause, PayingStop, RetiredStop;
+
+    override fun toString(): String {
+        return when (this) {
+            PayingPause -> "缴费暂停"
+            RetiredPause -> "待遇暂停"
+            PayingStop -> "缴费终止"
+            RetiredStop -> "待遇终止"
+        }
+    }
+}
+
+data class CeaseInfo(
+    val type: CeaseType,
     val reason: String,
     val yearMonth: String,
-    val auditDate: String,
-    val memo: String
+    val auditState: AuditState,
+    val auditDate: String?,
+    val memo: String,
+
+    var bankName: String? = null
 )
 
-
-class StopInfo(
-    val reason: String,
-    val yearMonth: String,
-    val auditDate: String,
-    val memo: String
-)
-
-fun Session.getPauseInfoByIdCard(idCard: String): PauseInfo? {
-    sendService(RetirePersonPauseAuditQuery(idCard))
-    val rpResult = getResult<RetirePersonPauseAuditQuery.Item>()
+fun Session.getPauseInfoByIdCard(idCard: String): CeaseInfo? {
+    sendService(RetiredPersonPauseAuditQuery(idCard))
+    val rpResult = getResult<RetiredPersonPauseAuditQuery.Item>()
     if (rpResult.isNotEmpty()) {
         return rpResult.first().let {
-            PauseInfo(
+            CeaseInfo(
+                CeaseType.RetiredPause,
                 it.reason.toString(),
                 it.pauseYearMonth.toString(),
+                it.auditState,
                 it.auditDate,
                 it.memo
             )
@@ -306,9 +326,11 @@ fun Session.getPauseInfoByIdCard(idCard: String): PauseInfo? {
         val ppResult = getResult<PayingPersonPauseAuditQuery.Item>()
         if (ppResult.isNotEmpty()) {
             return ppResult.first().let {
-                PauseInfo(
+                CeaseInfo(
+                    CeaseType.PayingPause,
                     it.reason.toString(),
                     it.pauseYearMonth,
+                    it.auditState,
                     it.auditDate,
                     it.memo
                 )
@@ -318,39 +340,49 @@ fun Session.getPauseInfoByIdCard(idCard: String): PauseInfo? {
     return null
 }
 
-fun Session.getStopInfoByIdCard(idCard: String): StopInfo? {
+fun Session.getStopInfoByIdCard(idCard: String, additionalInfo: Boolean = false): CeaseInfo? {
     sendService(RetiredPersonStopAuditQuery(idCard))
     val rpResult = getResult<RetiredPersonStopAuditQuery.Item>()
     if (rpResult.isNotEmpty()) {
-        val item = rpResult.first()
-        sendService(RetirePersonStopAuditDetailQuery(item))
-        val dtResult = getResult<RetirePersonStopAuditDetailQuery.Item>()
-        if (dtResult.isNotEmpty()) {
-            return dtResult.first().let {
-                StopInfo(
-                    it.reason.toString(),
-                    item.stopYearMonth,
-                    item.auditDate,
-                    item.memo
-                )
+        return rpResult.first().let {
+            val bankName = if (additionalInfo) {
+                sendService(RetirePersonStopAuditDetailQuery(it))
+                val result = getResult<RetirePersonStopAuditDetailQuery.Item>()
+                result.first().bankType.name
+            } else {
+                null
             }
+            CeaseInfo(
+                CeaseType.RetiredStop,
+                it.reason.toString(),
+                it.stopYearMonth.toString(),
+                it.auditState,
+                it.auditDate,
+                it.memo,
+                bankName
+            )
         }
     } else {
         sendService(PayingPersonStopAuditQuery(idCard))
         val ppResult = getResult<PayingPersonStopAuditQuery.Item>()
         if (ppResult.isNotEmpty()) {
-            val item = ppResult.first()
-            sendService(PayingPersonStopAuditDetailQuery(item))
-            val dtResult = getResult<PayingPersonStopAuditDetailQuery.Item>()
-            if (dtResult.isNotEmpty()) {
-                return dtResult.first().let {
-                    StopInfo(
-                        it.reason.toString(),
-                        item.stopYearMonth,
-                        item.auditDate,
-                        item.memo
-                    )
+            return ppResult.first().let {
+                val bankName = if (additionalInfo) {
+                    sendService(PayingPersonStopAuditDetailQuery(it))
+                    val result = getResult<PayingPersonStopAuditDetailQuery.Item>()
+                    result.first().bankType.name
+                } else {
+                    null
                 }
+                CeaseInfo(
+                    CeaseType.PayingStop,
+                    it.reason.toString(),
+                    it.stopYearMonth.toString(),
+                    it.auditState,
+                    it.auditDate,
+                    it.memo,
+                    bankName
+                )
             }
         }
     }

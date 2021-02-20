@@ -27,7 +27,7 @@ class Fetch : CommandWithHelp() {
     }
 
     override fun run() {
-        CommandLine.usage(Query(), System.out)
+        CommandLine.usage(Fetch(), System.out)
     }
 
     @CommandLine.Command(
@@ -107,7 +107,7 @@ class Fetch : CommandWithHelp() {
                 }
             }
 
-            workbook.save(excel.insertBeforeLastSubstring(".up", "."))
+            workbook.save(excel.insertBeforeLastSubstring(".up"))
 
             println("结束数据处理")
         }

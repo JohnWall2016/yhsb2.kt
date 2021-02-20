@@ -113,7 +113,7 @@ fun String.bar(
     specialProviders: List<CharWidthProvider> = listOf(ChineseCharWidthProvider)
 ) = fill(width, fillChar, specialProviders, FillMode.Both)
 
-fun String.insertBeforeLastSubstring(insert: String, substring: String): String {
+fun String.insertBeforeLastSubstring(insert: String, substring: String = "."): String {
     val index = lastIndexOf(substring)
     return if (index >= 0) {
         substring(0, index) + insert + substring(index)

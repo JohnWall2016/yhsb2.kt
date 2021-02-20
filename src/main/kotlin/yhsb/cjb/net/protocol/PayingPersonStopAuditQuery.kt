@@ -1,6 +1,7 @@
 package yhsb.cjb.net.protocol
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
 
 /** 缴费人员终止审核查询 */
 class PayingPersonStopAuditQuery(
@@ -32,18 +33,34 @@ class PayingPersonStopAuditQuery(
 
         /** 终止年月 */
         @SerializedName("aae031")
-        val stopYearMonth: String,
+        val stopYearMonth: Int,
+
+        @SerializedName("aae160")
+        val reason: StopReason,
 
         /** 审核日期 */
         @SerializedName("aae015")
-        val auditDate: String,
+        val auditDate: String?,
 
-        /** 备注? */
+        @SerializedName("aae016")
+        val auditState: AuditState,
+        /** 备注 */
         @SerializedName("aae013")
         val memo: String,
 
+        /** 银行户名 */
+        @SerializedName("aae009")
+        val bankName: String,
+
+        /** 银行账号 */
+        @SerializedName("aae010")
+        val bankAccount: String,
+
+        /** 退款金额 */
+        @SerializedName("aae025")
+        val refundAmount: BigDecimal,
+
         val aaz038: Int,
-        val aac001: Int,
-        val aae160: String
+        val aac001: Int
     )
 }

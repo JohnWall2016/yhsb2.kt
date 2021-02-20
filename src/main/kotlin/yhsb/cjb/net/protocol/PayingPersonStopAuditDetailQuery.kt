@@ -8,7 +8,7 @@ class PayingPersonStopAuditDetailQuery(
 ) : Request("cbzzfhPerinfo") {
     val aaz038 = "${item.aaz038}"
     val aac001 = "${item.aac001}"
-    val aae160 = item.aae160
+    val aae160 = item.reason.value
 
     data class Item(
         @SerializedName("aae160")

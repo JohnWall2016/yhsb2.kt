@@ -3,7 +3,7 @@ package yhsb.cjb.net.protocol
 import com.google.gson.annotations.SerializedName
 
 /** 待遇人员暂停审核查询 */
-class RetirePersonPauseAuditQuery(
+class RetiredPersonPauseAuditQuery(
     idCard: String
 ) : PageRequest("queryAllPausePersonInfosForAuditService") {
     val aaf013 = ""
@@ -53,7 +53,10 @@ class RetirePersonPauseAuditQuery(
 
         /** 审核日期 */
         @SerializedName("aae015")
-        val auditDate: String,
+        val auditDate: String?,
+
+        @SerializedName("aae016")
+        val auditState: AuditState,
 
         /** 村组名称 */
         @SerializedName("aaf102")

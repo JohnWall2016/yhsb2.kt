@@ -1,9 +1,9 @@
 package yhsb.cjb.net
 
-import yhsb.cjb.net.protocol.PaymentQuery
-import yhsb.cjb.net.protocol.PersonInfoInProvinceQuery
+import yhsb.cjb.net.protocol.*
 
 Session.use {
+    /*
     sendService(PersonInfoInProvinceQuery("430311194511291027"))
     val result = getResult<PersonInfoInProvinceQuery.Item>()
     println(result)
@@ -20,4 +20,12 @@ Session.use {
     result2.forEach {
         println(it)
     }
+    */
+
+    /*sendService(PayingPersonPauseAuditQuery("430321196810130559"))
+    println(readBody())*/
+    println(getPauseInfoByIdCard("430321196810130559"))
+    println(getPauseInfoByIdCard("430302191912225020"))
+    println(getStopInfoByIdCard("430302192603161021"))
+    println(getStopInfoByIdCard("430321196602051581"))
 }
