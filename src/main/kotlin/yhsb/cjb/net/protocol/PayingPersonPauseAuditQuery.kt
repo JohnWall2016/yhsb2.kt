@@ -48,6 +48,10 @@ class PayingPersonPauseAuditQuery(
         @SerializedName("aae160")
         val reason: PauseReason,
 
+        /** 经办时间 */
+        @SerializedName("aae036")
+        val opTime: String,
+
         /** 审核日期 */
         @SerializedName("aae015")
         val auditDate: String?,
