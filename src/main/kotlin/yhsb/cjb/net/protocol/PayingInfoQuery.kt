@@ -15,7 +15,7 @@ class PayingInfoQuery(
     data class Item(
         /** 缴费年度  */
         @SerializedName("aae003")
-        val year: Int,
+        val year: Int?,
 
         /** 备注  */
         @SerializedName("aae013")
