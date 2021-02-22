@@ -135,28 +135,28 @@ class Audit : CommandWithHelp() {
             Session.use {
                 println("查询经办人: $operator")
 
-                println("参保审核查询".bar(60, '='))
+                println(" 参保审核查询 ".bar(60, '='))
                 sendService(JoinAuditQuery(operator = operator, auditState = "0"))
                 val jaResult = getResult<JoinAuditQuery.Item>()
                 jaResult.withIndex().forEach { (i, it) ->
                     println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
                 }
 
-                println("缴费人员终止查询".bar(60, '='))
+                println(" 缴费人员终止查询 ".bar(60, '='))
                 sendService(PayingPersonStopAuditQuery(operator = operator, auditState = "0"))
                 val ppsResult = getResult<PayingPersonStopAuditQuery.Item>()
                 ppsResult.withIndex().forEach { (i, it) ->
                     println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
                 }
 
-                println("待遇人员终止查询".bar(60, '='))
+                println(" 待遇人员终止查询 ".bar(60, '='))
                 sendService(RetiredPersonStopAuditQuery(operator = operator, auditState = "0"))
                 val rpsResult = getResult<RetiredPersonStopAuditQuery.Item>()
                 rpsResult.withIndex().forEach { (i, it) ->
                     println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
                 }
 
-                println("缴费人员暂停查询".bar(60, '='))
+                println(" 缴费人员暂停查询 ".bar(60, '='))
                 sendService(PayingPersonPauseAuditQuery(auditState = "0"))
                 val pppResult = getResult<PayingPersonPauseAuditQuery.Item>()
                 pppResult.filter { item ->
@@ -168,7 +168,7 @@ class Audit : CommandWithHelp() {
                     println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
                 }
 
-                println("待遇人员暂停查询".bar(60, '='))
+                println(" 待遇人员暂停查询 ".bar(60, '='))
                 sendService(RetiredPersonPauseAuditQuery(auditState = "0"))
                 val rppResult = getResult<RetiredPersonPauseAuditQuery.Item>()
                 rppResult.filter { item ->
