@@ -3,7 +3,7 @@ package yhsb.cjb.net.protocol
 import com.google.gson.annotations.SerializedName
 
 /** 待遇人员终止审核个人信息查询 */
-class RetirePersonStopAuditDetailQuery(
+class RetiredPersonStopAuditDetailQuery(
     item: RetiredPersonStopAuditQuery.Item
 ) : Request("dyzzfhPerinfo") {
     val aaz176 = "${item.aaz176}"

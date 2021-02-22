@@ -63,6 +63,8 @@ class RetiredPersonPauseAuditQuery(
         override val czName: String,
 
         @SerializedName("aae013")
-        val memo: String
+        val memo: String,
+
+        val aaz173: Int
     ) : XzqhName
 }

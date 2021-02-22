@@ -70,6 +70,13 @@ class RetiredPersonStopAuditQuery(
         /** 退款金额 */
         @SerializedName("aae425")
         val refundAmount: BigDecimal,
+
+        @SerializedName("aae011")
+        val operator: String,
+
+        /** 经办时间 */
+        @SerializedName("aae036")
+        val opTime: String,
     
         val aaz176: Int,
     )

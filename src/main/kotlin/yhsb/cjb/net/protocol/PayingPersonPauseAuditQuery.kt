@@ -55,6 +55,9 @@ class PayingPersonPauseAuditQuery(
         override val czName: String,
 
         @SerializedName("aae013")
-        val memo: String
+        val memo: String,
+
+        @SerializedName("aaz163")
+        val id: Int
     ) : XzqhName
 }

@@ -342,8 +342,8 @@ fun Session.getStopInfoByIdCard(idCard: String, additionalInfo: Boolean = false)
     if (rpResult.isNotEmpty()) {
         return rpResult.first().let {
             val bankName = if (additionalInfo) {
-                sendService(RetirePersonStopAuditDetailQuery(it))
-                val result = getResult<RetirePersonStopAuditDetailQuery.Item>()
+                sendService(RetiredPersonStopAuditDetailQuery(it))
+                val result = getResult<RetiredPersonStopAuditDetailQuery.Item>()
                 result.first().bankType.name
             } else {
                 null

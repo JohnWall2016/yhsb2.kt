@@ -60,6 +60,13 @@ class PayingPersonStopAuditQuery(
         @SerializedName("aae025")
         val refundAmount: BigDecimal,
 
+        @SerializedName("aae011")
+        val operator: String,
+
+        /** 经办时间 */
+        @SerializedName("aae036")
+        val opTime: String,
+
         val aaz038: Int,
         val aac001: Int
     )

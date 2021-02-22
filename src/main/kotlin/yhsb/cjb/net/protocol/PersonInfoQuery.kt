@@ -22,11 +22,15 @@ class PersonInfoQuery(
 
     val aac006str = ""
     val aac006end = ""
+
     val aac066 = ""
+
     val aae030str = ""
     val aae030end = ""
+
     val aae476 = ""
     val aae480 = ""
+    val aae479 = ""
     val aac058 = ""
 
     @SerializedName("aac002")
