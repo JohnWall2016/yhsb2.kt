@@ -9,18 +9,19 @@ import yhsb.base.excel.Excel
 import yhsb.base.excel.getCell
 import yhsb.base.excel.getOrCopyRow
 import yhsb.base.excel.save
+import yhsb.base.text.bar
 import yhsb.base.text.fillRight
 import yhsb.cjb.db.JzfpDb2021
 import yhsb.cjb.db.historyData
 import yhsb.cjb.net.Session
-import yhsb.cjb.net.protocol.JbKind
-import yhsb.cjb.net.protocol.JoinAuditQuery
+import yhsb.cjb.net.protocol.*
 import java.nio.file.Paths
 
 @CommandLine.Command(
     description = ["城居保审核程序"],
     subcommands = [
-        Audit.JoinAudit::class
+        Audit.JoinAudit::class,
+        Audit.OnlineAudit::class,
     ]
 )
 class Audit : CommandWithHelp() {
@@ -72,7 +73,7 @@ class Audit : CommandWithHelp() {
             println(timeSpan)
 
             val result = Session.use {
-                sendService(JoinAuditQuery(startDate, endDate))
+                sendService(JoinAuditQuery(startDate, endDate, auditState = "1"))
                 getResult<JoinAuditQuery.Item>()
             }
 
@@ -116,6 +117,67 @@ class Audit : CommandWithHelp() {
                     }
 
                     workbook.save(Paths.get(outputDir, "批量信息变更(${timeSpan})${DateTime.format()}.xls"))
+                }
+            }
+        }
+    }
+
+    @CommandLine.Command(
+        name = "online",
+        description = ["网上居保审核查询程序"]
+    )
+    class OnlineAudit : CommandWithHelp() {
+
+        @CommandLine.Parameters(paramLabel = "operator", description = ["网络经办人名称, 默认: wsjb"], defaultValue = "wsjb")
+        private var operator = "wsjb"
+
+        override fun run() {
+            Session.use {
+                println("查询经办人: $operator")
+
+                println("参保审核查询".bar(60, '='))
+                sendService(JoinAuditQuery(operator = operator, auditState = "0"))
+                val jaResult = getResult<JoinAuditQuery.Item>()
+                jaResult.withIndex().forEach { (i, it) ->
+                    println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
+                }
+
+                println("缴费人员终止查询".bar(60, '='))
+                sendService(PayingPersonStopAuditQuery(operator = operator, auditState = "0"))
+                val ppsResult = getResult<PayingPersonStopAuditQuery.Item>()
+                ppsResult.withIndex().forEach { (i, it) ->
+                    println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
+                }
+
+                println("待遇人员终止查询".bar(60, '='))
+                sendService(RetiredPersonStopAuditQuery(operator = operator, auditState = "0"))
+                val rpsResult = getResult<RetiredPersonStopAuditQuery.Item>()
+                rpsResult.withIndex().forEach { (i, it) ->
+                    println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
+                }
+
+                println("缴费人员暂停查询".bar(60, '='))
+                sendService(PayingPersonPauseAuditQuery(auditState = "0"))
+                val pppResult = getResult<PayingPersonPauseAuditQuery.Item>()
+                pppResult.filter { item ->
+                    sendService(PayingPersonPauseAuditDetailQuery(item))
+                    getResult<PayingPersonPauseAuditDetailQuery.Item>().any {
+                        it.operator == operator
+                    }
+                }.withIndex().forEach { (i, it) ->
+                    println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
+                }
+
+                println("待遇人员暂停查询".bar(60, '='))
+                sendService(RetiredPersonPauseAuditQuery(auditState = "0"))
+                val rppResult = getResult<RetiredPersonPauseAuditQuery.Item>()
+                rppResult.filter { item ->
+                    sendService(RetiredPersonPauseAuditDetailQuery(item))
+                    getResult<RetiredPersonPauseAuditDetailQuery.Item>().any {
+                        it.operator == operator
+                    }
+                }.withIndex().forEach { (i, it) ->
+                    println("${(i+1).toString().fillRight(3)} ${it.idCard} ${it.name}")
                 }
             }
         }

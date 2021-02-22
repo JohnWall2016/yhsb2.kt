@@ -4,8 +4,12 @@ import com.google.gson.annotations.SerializedName
 
 /** 待遇人员暂停审核查询 */
 class RetiredPersonPauseAuditQuery(
-    idCard: String
-) : PageRequest("queryAllPausePersonInfosForAuditService") {
+    idCard: String = "",
+    auditState: String = "0"
+) : PageRequest(
+    "queryAllPausePersonInfosForAuditService",
+    pageSize = 500
+) {
     val aaf013 = ""
     val aaz070 = ""
 
@@ -18,7 +22,8 @@ class RetiredPersonPauseAuditQuery(
     val aae141s = ""
 
     /** 审核状态 */
-    val aae016 = ""
+    @SerializedName("aae016")
+    val auditState = auditState
 
     /** 起始经办时间 */
     val aae036 = ""

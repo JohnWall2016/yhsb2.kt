@@ -4,9 +4,10 @@ import com.google.gson.annotations.SerializedName
 
 /** 参保审核查询 */
 class JoinAuditQuery(
-    startDate: String,
-    endDate: String,
-    auditState: String = "1"
+    startDate: String = "",
+    endDate: String = "",
+    auditState: String = "0",
+    operator: String = ""
 ) : PageRequest(
     "cbshQuery",
     pageSize = 500
@@ -17,7 +18,8 @@ class JoinAuditQuery(
     @SerializedName("aae016")
     val auditState = auditState
 
-    val aae011 = ""
+    @SerializedName("aae011")
+    val operator = operator
 
     val aae036 = ""
     val aae036s = ""

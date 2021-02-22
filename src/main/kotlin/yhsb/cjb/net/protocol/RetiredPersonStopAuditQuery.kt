@@ -5,12 +5,22 @@ import java.math.BigDecimal
 
 /** 待遇人员终止审核查询 */
 class RetiredPersonStopAuditQuery(
-    idCard: String
-) : PageRequest("dyzzfhPerInfoList") {
+    idCard: String = "",
+    auditState: String = "0",
+    operator: String = ""
+) : PageRequest(
+    "dyzzfhPerInfoList",
+    pageSize = 500
+) {
     val aaf013 = ""
     val aaf030 = ""
-    val aae016 = ""
-    val aae011 = ""
+
+    @SerializedName("aae016")
+    val auditState = auditState
+
+    @SerializedName("aae011")
+    val operator = operator
+
     val aae036 = ""
     val aae036s = ""
     val aae014 = ""
