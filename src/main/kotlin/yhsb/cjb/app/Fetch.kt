@@ -167,11 +167,15 @@ class Fetch : CommandWithHelp() {
             for (data in this) {
                 val year = data.year
                 if (year != null) {
-                    val records = if (data.isPaidOff()) mapRecord.paidRecords else mapRecord.unpaidRecords
+                    val records = if (data.isPaidOff()) {
+                        mapRecord.paidRecords
+                    } else {
+                        mapRecord.unpaidRecords
+                    }
                     var record = records[year]
                     if (record == null) {
-                       record = PayRecord(year)
-                       records[year] = record
+                        record = PayRecord(year)
+                        records[year] = record
                     }
                     val amount = data.amount
                     when (data.item.value) {
@@ -208,38 +212,50 @@ class Fetch : CommandWithHelp() {
             }
             total.total =
                 total.personal +
-                total.provincial + total.civic + total.prefectural +
-                total.governmentalPay + total.communalPay + total.fishmanPay
+                        total.provincial + total.civic + total.prefectural +
+                        total.governmentalPay + total.communalPay + total.fishmanPay
             result.add(total)
             return result
         }
 
         fun PersonInfoInProvinceQuery.Item.print() {
             println("个人信息:")
-            println(String.format("%s %s %s %s %s %s %s", name, idCard,
-                jbState, jbKind, agency, czName, opTime))
+            println(
+                String.format(
+                    "%s %s %s %s %s %s %s", name, idCard,
+                    jbState, jbKind, agency, czName, opTime
+                )
+            )
         }
 
         fun PayRecord.format(): String {
             return if (this !is PayTotalRecord) {
-                String.format("%5s%9s%9s%9s%9s%9s%9s%13s  %s %s", year,
+                String.format(
+                    "%5s%9s%9s%9s%9s%9s%9s%13s  %s %s", year,
                     personal, provincial, civic, prefectural,
                     governmentalPay, communalPay, fishmanPay,
                     agencies.joinToString("|"),
-                    transferDates.joinToString("|"))
+                    transferDates.joinToString("|")
+                )
             } else {
-                String.format(" 合计%9s%9s%9s%9s%9s%9s%13s",
+                String.format(
+                    " 合计%9s%9s%9s%9s%9s%9s%13s",
                     personal, provincial, civic, prefectural,
-                    governmentalPay, communalPay, fishmanPay) +
-                "  总计: $total"
+                    governmentalPay, communalPay, fishmanPay
+                ) +
+                        "  总计: $total"
             }
         }
 
         fun List<PayRecord>.print(message: String) {
             println(message)
-            println(String.format("%2s%3s%6s%5s%5s%5s%5s%5s%7s %s %s",
-                "序号", "年度", "个人缴费", "省级补贴", "市级补贴", "县级补贴",
-                "政府代缴", "集体补助", "退捕渔民补助", "社保经办机构", "划拨时间"))
+            println(
+                String.format(
+                    "%2s%3s%6s%5s%5s%5s%5s%5s%7s %s %s",
+                    "序号", "年度", "个人缴费", "省级补贴", "市级补贴", "县级补贴",
+                    "政府代缴", "集体补助", "退捕渔民补助", "社保经办机构", "划拨时间"
+                )
+            )
             var i = 1
             for (r in this) {
                 val t = if (r is PayTotalRecord) "" else "${i++}"
@@ -269,9 +285,9 @@ class Fetch : CommandWithHelp() {
             }
             info.print()
 
-            val (paidRecords, _) = if (payResult == null) {
+            val paidRecords = if (payResult == null) {
                 println("未查询到缴费信息")
-                Pair(null, null)
+                null
             } else {
                 val (paid, unpaid) = payResult.getRecords()
                 val records = paid.orderAndSum()
@@ -280,7 +296,7 @@ class Fetch : CommandWithHelp() {
                 if (unrecords.isNotEmpty()) {
                     unrecords.print("\n未拨付补录入记录:")
                 }
-                Pair(records, unrecords)
+                records
             }
 
             if (export) {

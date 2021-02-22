@@ -139,21 +139,21 @@ class Audit : CommandWithHelp() {
                 sendService(JoinAuditQuery(operator = operator, auditState = "0"))
                 val jaResult = getResult<JoinAuditQuery.Item>()
                 jaResult.withIndex().forEach { (i, it) ->
-                    println("${(i+1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
+                    println("${(i + 1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
                 }
 
                 println(" 缴费人员终止查询 ".bar(60, '='))
                 sendService(PayingPersonStopAuditQuery(operator = operator, auditState = "0"))
                 val ppsResult = getResult<PayingPersonStopAuditQuery.Item>()
                 ppsResult.withIndex().forEach { (i, it) ->
-                    println("${(i+1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
+                    println("${(i + 1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
                 }
 
                 println(" 待遇人员终止查询 ".bar(60, '='))
                 sendService(RetiredPersonStopAuditQuery(operator = operator, auditState = "0"))
                 val rpsResult = getResult<RetiredPersonStopAuditQuery.Item>()
                 rpsResult.withIndex().forEach { (i, it) ->
-                    println("${(i+1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
+                    println("${(i + 1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
                 }
 
                 println(" 缴费人员暂停查询 ".bar(60, '='))
@@ -165,7 +165,7 @@ class Audit : CommandWithHelp() {
                         it.operator == operator
                     }
                 }.withIndex().forEach { (i, it) ->
-                    println("${(i+1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
+                    println("${(i + 1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
                 }
 
                 println(" 待遇人员暂停查询 ".bar(60, '='))
@@ -177,7 +177,7 @@ class Audit : CommandWithHelp() {
                         it.operator == operator
                     }
                 }.withIndex().forEach { (i, it) ->
-                    println("${(i+1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
+                    println("${(i + 1).toString().fillRight(3)} ${it.name.fillRight(6)} ${it.idCard} ${it.opTime}")
                 }
             }
         }
