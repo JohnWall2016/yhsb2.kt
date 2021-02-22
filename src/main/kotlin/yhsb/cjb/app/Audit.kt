@@ -18,7 +18,7 @@ import yhsb.cjb.net.protocol.*
 import java.nio.file.Paths
 
 @CommandLine.Command(
-    description = ["城居保审核程序"],
+    description = ["城居保数据审核程序"],
     subcommands = [
         Audit.JoinAudit::class,
         Audit.OnlineAudit::class,

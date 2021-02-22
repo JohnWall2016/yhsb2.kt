@@ -16,7 +16,7 @@ import java.math.BigDecimal
 import java.nio.file.Paths
 
 @CommandLine.Command(
-    description = ["城居保信息查询和更新程序"],
+    description = ["城居保信息检索程序"],
     subcommands = [
         Fetch.Query::class,
         Fetch.Update::class,
