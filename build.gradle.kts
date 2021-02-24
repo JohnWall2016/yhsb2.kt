@@ -57,6 +57,10 @@ execTask("cjb.payment", "财务支付单生成程序") {
     main = "yhsb.cjb.app.Payment"
 }
 
+execTask("cjb.treatment", "待遇人员信息核对表格生成程序") {
+    main = "yhsb.cjb.app.Treatment"
+}
+
 task("list") {
     doLast {
         execTasks.forEach { (name, desc) ->
