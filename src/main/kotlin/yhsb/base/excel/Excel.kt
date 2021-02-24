@@ -112,7 +112,7 @@ fun Sheet.createRow(
 fun Sheet.getOrCopyRow(
     targetRowIndex: Int,
     sourceRowIndex: Int,
-    clearValue: Boolean = false
+    clearValue: Boolean = true
 ): Row {
     return if (targetRowIndex == sourceRowIndex) {
         getRow(sourceRowIndex)
@@ -227,10 +227,10 @@ fun Cell.getString(type: CellType): String {
     }
 }
 
-fun Cell.setValue(v: String?) = setCellValue(v ?: "")
-fun Cell.setValue(v: Double?) = setCellValue(v ?: 0.0)
-fun Cell.setValue(v: BigDecimal?) = setCellValue(v?.toString() ?: "")
-fun Cell.setValue(v: Int?) = setCellValue(v?.toString() ?: "")
+fun Cell.setValue(v: String?) = if (v != null) setCellValue(v) else setBlank()
+fun Cell.setValue(v: Double?) = if (v != null) setCellValue(v) else setBlank()
+fun Cell.setValue(v: BigDecimal?) = if (v != null) setCellValue(v.toDouble()) else setBlank()
+fun Cell.setValue(v: Int?) = if (v != null) setCellValue(v.toDouble()) else setBlank()
 
 class CellRef(
     val row: Int, val column: Int,
