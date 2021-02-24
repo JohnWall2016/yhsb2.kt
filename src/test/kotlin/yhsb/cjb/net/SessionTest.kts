@@ -28,5 +28,5 @@ Session.use {
     println(getPauseInfoByIdCard("430302191912225020"))
     println(getStopInfoByIdCard("430302192603161021"))
     println(getStopInfoByIdCard("430321196602051581"))*/
-    println(getStopInfoByIdCard("430321195209020514"))
+    println(getStopInfoByIdCard("430321195209020514", true))
 }
