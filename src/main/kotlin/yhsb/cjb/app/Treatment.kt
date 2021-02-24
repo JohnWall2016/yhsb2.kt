@@ -5,6 +5,7 @@ import yhsb.base.cmd.CommandWithHelp
 import yhsb.base.datetime.DateTime
 import yhsb.base.excel.*
 import yhsb.base.text.stripPrefix
+import yhsb.base.text.times
 import yhsb.cjb.net.Session
 import yhsb.cjb.net.protocol.BankInfoQuery
 import yhsb.cjb.net.protocol.TreatmentReviewQuery
@@ -17,7 +18,8 @@ import java.nio.file.Paths
 @CommandLine.Command(
     description = ["信息核对报告表和养老金计算表生成程序"],
     subcommands = [
-        Treatment.Download::class
+        Treatment.Download::class,
+        Treatment.Split::class
     ]
 )
 class Treatment : CommandWithHelp() {
@@ -102,18 +104,16 @@ class Treatment : CommandWithHelp() {
         )
         private var endRow = 0
 
-        private val outputDir = """D:\待遇核定"""
+        private val rootDir = """D:\待遇核定"""
 
         private val template = "养老金计算表模板.xlsx"
-
-        private val payInfoTemplate = "养老金计算表模板.xlsx"
 
         override fun run() {
             val (year, month) = DateTime.split(date)
 
-            val inputExcel = Paths.get(outputDir, "信息核对报告表$date.xlsx")
-            val outputExcel = Paths.get(outputDir, "${year}年${month.stripPrefix("0")}月待遇核定数据")
-            val infoExcel = Paths.get(outputDir, "信息核对报告表模板.xlsx")
+            val inputExcel = Paths.get(rootDir, "信息核对报告表$date.xlsx")
+            val infoExcel = Paths.get(rootDir, "信息核对报告表模板.xlsx")
+            val outputDir = Paths.get(rootDir, "${year}年${month.stripPrefix("0")}月待遇核定数据")
 
             val workbook = Excel.load(inputExcel)
             val sheet = workbook.getSheetAt(0)
@@ -130,23 +130,23 @@ class Treatment : CommandWithHelp() {
                 if (map[dw]?.containsKey(cs) == true) {
                     map[dw]?.get(cs)?.add(index)
                 } else {
-                    map[dw]?.set(cs, mutableListOf())
+                    map[dw]?.set(cs, mutableListOf(index))
                 }
             }
 
             println("生成分组目录并分别生成信息核对报告表")
-            if (Files.exists(Paths.get(outputDir))) {
-                Files.move(Paths.get(outputDir), Paths.get("$outputDir.orig"))
+            if (Files.exists(outputDir)) {
+                Files.move(outputDir, Paths.get("$outputDir.orig"))
             }
-            Files.createDirectory(Paths.get(outputDir))
+            Files.createDirectory(outputDir)
 
             for (dw in map.keys) {
                 println("$dw:")
-                Files.createDirectory(Paths.get(outputDir, dw))
+                Files.createDirectory(outputDir.resolve(dw))
 
                 for (cs in map[dw]?.keys!!) {
                     println("  $cs: ${map[dw]?.get(cs)}")
-                    Files.createDirectory(Paths.get(outputDir, dw, cs))
+                    Files.createDirectory(outputDir.resolve(Paths.get(dw, cs)))
 
                     val outWorkbook = Excel.load(infoExcel)
                     val outSheet = outWorkbook.getSheetAt(0)
@@ -165,12 +165,12 @@ class Treatment : CommandWithHelp() {
                         }
                     }
 
-                    outWorkbook.save(Paths.get(outputDir, dw, cs, "${cs}信息核对报告表.xlsx"))
+                    outWorkbook.save(outputDir.resolve(Paths.get(dw, cs, "${cs}信息核对报告表.xlsx")))
                 }
             }
 
             println("\n按分组生成养老金养老金计算表")
-            /*Session.use { sess ->
+            Session.use {
                 for (dw in map.keys) {
                     for (cs in map[dw]?.keys!!) {
                         map[dw]?.get(cs)?.forEach { index ->
@@ -180,12 +180,14 @@ class Treatment : CommandWithHelp() {
                             println("  $idCard $name")
 
                             try {
-
+                                getPaymentInfoReport(name, idCard, outputDir.resolve(Paths.get(dw, cs)))
+                            } catch (e: Exception) {
+                                println("$idCard $name 获得养老金计算表岀错: $e")
                             }
                         }
                     }
                 }
-            }*/
+            }
         }
 
         fun Session.getPaymentInfoReport(name: String, idCard: String, outDir: Path, retry: Int = 3) {
@@ -203,7 +205,7 @@ class Treatment : CommandWithHelp() {
                         throw Exception("养老金计算信息无效")
                     }
                 }
-                val workbook = Excel.load(Paths.get(outputDir, payInfoTemplate))
+                val workbook = Excel.load(Paths.get(rootDir, template))
                 workbook.getSheetAt(0).apply {
                     getCell("A5").setValue(payInfo.groupValues[1])
                     getCell("B5").setValue(payInfo.groupValues[2])
@@ -241,9 +243,24 @@ class Treatment : CommandWithHelp() {
                     if (biResult.isNotEmpty()) {
                         biResult.first().let {
                             getCell("B15").setValue(it.countName)
+                            getCell("F15").setValue(it.bankType.name)
+
+                            var card = it.cardNumber
+                            val len = card.length
+                            if (len > 7) {
+                                card = card.substring(0, 3) + "*".times(len - 7) + card.substring(len - 4)
+                            } else if (len > 4) {
+                                card = "*".times(len - 4) + card.substring(len - 4)
+                            }
+                            getCell("J15").setValue(card)
                         }
+                    } else {
+                        getCell("B15").setValue("未绑定银行账户")
                     }
                 }
+                workbook.save(outDir.resolve("${name}[$idCard]养老金计算表.xlsx"))
+            } else {
+                throw Exception("未查到该人员核定数据")
             }
         }
     }
