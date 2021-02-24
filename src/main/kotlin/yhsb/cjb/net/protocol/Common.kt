@@ -304,10 +304,10 @@ data class CeaseInfo(
 )
 
 fun Session.getPauseInfoByIdCard(idCard: String): CeaseInfo? {
-    sendService(RetiredPersonPauseAuditQuery(idCard))
+    sendService(RetiredPersonPauseAuditQuery(idCard, "1"))
     val rpResult = getResult<RetiredPersonPauseAuditQuery.Item>()
     if (rpResult.isNotEmpty()) {
-        return rpResult.first().let {
+        return rpResult.maxByOrNull { it.auditDate ?: "" }?.let {
             CeaseInfo(
                 CeaseType.RetiredPause,
                 it.reason.toString(),
@@ -318,10 +318,10 @@ fun Session.getPauseInfoByIdCard(idCard: String): CeaseInfo? {
             )
         }
     } else {
-        sendService(PayingPersonPauseAuditQuery(idCard))
+        sendService(PayingPersonPauseAuditQuery(idCard, "1"))
         val ppResult = getResult<PayingPersonPauseAuditQuery.Item>()
         if (ppResult.isNotEmpty()) {
-            return ppResult.first().let {
+            return ppResult.maxByOrNull { it.auditDate ?: "" }?.let {
                 CeaseInfo(
                     CeaseType.PayingPause,
                     it.reason.toString(),
@@ -337,7 +337,7 @@ fun Session.getPauseInfoByIdCard(idCard: String): CeaseInfo? {
 }
 
 fun Session.getStopInfoByIdCard(idCard: String, additionalInfo: Boolean = false): CeaseInfo? {
-    sendService(RetiredPersonStopAuditQuery(idCard))
+    sendService(RetiredPersonStopAuditQuery(idCard, "1"))
     val rpResult = getResult<RetiredPersonStopAuditQuery.Item>()
     if (rpResult.isNotEmpty()) {
         return rpResult.first().let {
@@ -359,7 +359,7 @@ fun Session.getStopInfoByIdCard(idCard: String, additionalInfo: Boolean = false)
             )
         }
     } else {
-        sendService(PayingPersonStopAuditQuery(idCard))
+        sendService(PayingPersonStopAuditQuery(idCard, "1"))
         val ppResult = getResult<PayingPersonStopAuditQuery.Item>()
         if (ppResult.isNotEmpty()) {
             return ppResult.first().let {

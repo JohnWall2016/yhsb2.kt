@@ -24,8 +24,9 @@ Session.use {
 
     /*sendService(PayingPersonPauseAuditQuery("430321196810130559"))
     println(readBody())*/
-    println(getPauseInfoByIdCard("430321196810130559"))
+    /*println(getPauseInfoByIdCard("430321196810130559"))
     println(getPauseInfoByIdCard("430302191912225020"))
     println(getStopInfoByIdCard("430302192603161021"))
-    println(getStopInfoByIdCard("430321196602051581"))
+    println(getStopInfoByIdCard("430321196602051581"))*/
+    println(getStopInfoByIdCard("430321195209020514"))
 }

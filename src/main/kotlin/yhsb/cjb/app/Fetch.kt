@@ -63,12 +63,12 @@ class Fetch : CommandWithHelp() {
                                 val info = when (p.cbState.value) {
                                     "2" -> { // 暂停参保
                                         getPauseInfoByIdCard(idCard)?.let {
-                                            "暂停参保(${it.reason}, ${it.yearMonth}, ${it.memo})"
+                                            "暂停参保(${it.reason}, ${it.yearMonth}, ${it.memo}, ${it.auditDate})"
                                         } ?: ""
                                     }
                                     "4" -> { // 终止参保
                                         getStopInfoByIdCard(idCard)?.let {
-                                            "终止参保(${it.reason}, ${it.yearMonth}, ${it.memo})"
+                                            "终止参保(${it.reason}, ${it.yearMonth}, ${it.memo}), ${it.auditDate}"
                                         } ?: ""
                                     }
                                     else -> ""
@@ -87,6 +87,9 @@ class Fetch : CommandWithHelp() {
         description = ["更新excel表格中人员参保信息"]
     )
     class Update : ExcelUpdateByPersonCommand() {
+        @CommandLine.Option(names = ["-d", "--detail"], description = ["是否更新详细情况"])
+        private var detail = false
+
         override fun run() {
             println("开始处理数据")
 
@@ -102,7 +105,26 @@ class Fetch : CommandWithHelp() {
                     sendService(PersonInfoInProvinceQuery(idCard))
                     val result = getResult<PersonInfoInProvinceQuery.Item>()
                     val state = if (result.isNotEmpty()) {
-                        result.first().jbState
+                        //result.first().jbState
+                        val p = result.first()
+                        //println("${p.idCard} ${p.name} ${p.jbState} ${p.dwName} ${p.csName}")
+                        if (!detail) {
+                            p.jbState
+                        } else {
+                            when (p.cbState.value) {
+                                "2" -> { // 暂停参保
+                                    getPauseInfoByIdCard(idCard)?.let {
+                                        "${p.jbState}, 暂停参保(${it.reason}, ${it.yearMonth}, ${it.memo}, ${it.auditDate})"
+                                    } ?: p.jbState
+                                }
+                                "4" -> { // 终止参保
+                                    getStopInfoByIdCard(idCard)?.let {
+                                        "${p.jbState}, 终止参保(${it.reason}, ${it.yearMonth}, ${it.memo}), ${it.auditDate}"
+                                    } ?: p.jbState
+                                }
+                                else -> p.jbState
+                            }
+                        }
                     } else {
                         "未参保"
                     }
