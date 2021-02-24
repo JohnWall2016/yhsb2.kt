@@ -207,6 +207,12 @@ fun Row.getOrCreateCell(column: Int): Cell {
 
 fun Row.getOrCreateCell(columnName: String): Cell = getOrCreateCell(CellRef.columnNameToNumber(columnName) - 1)
 
+fun Row.copyTo(dest: Row, vararg fields: String) {
+    for (field in fields) {
+        dest.getOrCreateCell(field).setValue(getCell(field).getValue())
+    }
+}
+
 fun Cell?.getValue() = this?.getString(cellType) ?: ""
 
 fun Cell.getString(type: CellType): String {
