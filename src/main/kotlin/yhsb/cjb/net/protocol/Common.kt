@@ -182,6 +182,7 @@ class DfType() : MapField() {
         "802" to "乡村教师",
         "803" to "乡村医生",
         "807" to "电影放映",
+        "808" to "核工业",
     )
 
     constructor(value: String) : this() {
@@ -196,6 +197,7 @@ class DfPayType() : MapField() {
         "DF0002" to "乡村教师",
         "DF0003" to "乡村医生",
         "DF0007" to "电影放映员",
+        "DF0008" to "核工业",
     )
 
     constructor(value: String) : this() {

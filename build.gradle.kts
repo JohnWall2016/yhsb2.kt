@@ -61,10 +61,17 @@ execTask("cjb.treatment", "待遇人员信息核对表格生成程序") {
     main = "yhsb.cjb.app.Treatment"
 }
 
+execTask("cjb.delegate", "代发数据导出制表程序") {
+    main = "yhsb.cjb.app.Delegate"
+}
+
 task("list") {
     doLast {
+        val len = execTasks.keys.fold(0) { acc, name ->
+            acc.coerceAtLeast(name.length)
+        }
         execTasks.forEach { (name, desc) ->
-            println("${name.padEnd(12)}$desc")
+            println("${name.padEnd(len + 1)}$desc")
         }
     }
 }

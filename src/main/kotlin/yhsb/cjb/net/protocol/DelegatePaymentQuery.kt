@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 /**
  * 代发支付单查询
  */
-class DfPaylistQuery(
+class DelegatePaymentQuery(
     type: String,
     yearMonth: String,
     state: String = "0",
@@ -30,7 +30,7 @@ class DfPaylistQuery(
     data class Item(
         /** 业务类型中文名 */
         @SerializedName("aaa121")
-        val typeCh: String,
+        val typeCh: String?,
 
         /** 付款单号 */
         @SerializedName("aaz031")
@@ -38,6 +38,6 @@ class DfPaylistQuery(
 
         /** 支付银行编码 */
         @SerializedName("bie013")
-        val bankType: String
+        val bankType: String?
     )
 }

@@ -6,9 +6,11 @@ import java.math.BigDecimal
 /**
  * 代发人员名单查询
  */
-class DfPersonQuery(
+class DelegatePersonQuery(
     type: String,
+    /** 代发参保状态: 1 - 有效, 0 - 无效 */
     cbState: String,
+    /** 代发发放状态: 1 - 正常发放, 2 - 暂停发放, 3 - 终止发放 */
     dfState: String,
     page: Int = 1,
     pageSize: Int = 100,
@@ -41,7 +43,7 @@ class DfPersonQuery(
     data class Item(
         /** 个人编号 */
         @SerializedName("aac001")
-        val pid: Int,
+        val pid: Int?,
 
         /** 身份证号码 */
         @SerializedName("aac002")
@@ -60,7 +62,7 @@ class DfPersonQuery(
 
         /** 代发标准 */
         @SerializedName("aae019")
-        val standard: BigDecimal,
+        val standard: BigDecimal?,
 
         /** 代发类型 */
         @SerializedName("aac066s")
@@ -76,10 +78,10 @@ class DfPersonQuery(
 
         /** 代发截至成功发放年月 */
         @SerializedName("aae002jz")
-        val endYearMonth: Int,
+        val endYearMonth: Int?,
 
         /** 代发截至成功发放金额*/
         @SerializedName("aae019jz")
-        val totalPayed: BigDecimal,
+        val totalPayed: BigDecimal?,
     )
 }
