@@ -9,7 +9,7 @@ import yhsb.base.text.times
 import yhsb.cjb.net.Session
 import yhsb.cjb.net.protocol.BankInfoQuery
 import yhsb.cjb.net.protocol.TreatmentReviewQuery
-import yhsb.cjb.net.protocol.Xzqh
+import yhsb.cjb.net.protocol.Division
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Path
@@ -122,7 +122,7 @@ class Treatment : CommandWithHelp() {
             val map = mutableMapOf<String, MutableMap<String, MutableList<Int>>>()
             for (index in (startRow - 1) until endRow) {
                 val xzqh = sheet.getCell(index, "D").getValue()
-                val (dw, cs) = Xzqh.getDwAndCsName(xzqh) ?: throw Exception("未匹配行政区划: $xzqh")
+                val (dw, cs) = Division.getDwAndCsName(xzqh) ?: throw Exception("未匹配行政区划: $xzqh")
 
                 if (map.containsKey(dw)) {
                     map[dw] = mutableMapOf()

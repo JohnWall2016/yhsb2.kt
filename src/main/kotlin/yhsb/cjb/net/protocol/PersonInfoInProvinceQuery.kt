@@ -50,7 +50,7 @@ class PersonInfoInProvinceQuery(
         @SerializedName("aaf102")
         override val czName: String,
 
-    ) : JbState, XzqhName {
+    ) : JbState, DivisionName {
 
         fun invalid(): Boolean = idCard.isNullOrEmpty()
 

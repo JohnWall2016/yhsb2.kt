@@ -41,5 +41,5 @@ class RetiredPersonPauseQuery(
 
         @SerializedName("aae013")
         val memo: String
-    ) : XzqhName
+    ) : DivisionName
 }

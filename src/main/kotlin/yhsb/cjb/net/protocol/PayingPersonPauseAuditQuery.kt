@@ -68,5 +68,5 @@ class PayingPersonPauseAuditQuery(
 
         @SerializedName("aaz163")
         val id: Int
-    ) : XzqhName
+    ) : DivisionName
 }

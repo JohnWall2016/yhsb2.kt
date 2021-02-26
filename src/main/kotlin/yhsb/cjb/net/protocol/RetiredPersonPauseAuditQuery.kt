@@ -75,5 +75,5 @@ class RetiredPersonPauseAuditQuery(
         val memo: String,
 
         val aaz173: Int
-    ) : XzqhName
+    ) : DivisionName
 }

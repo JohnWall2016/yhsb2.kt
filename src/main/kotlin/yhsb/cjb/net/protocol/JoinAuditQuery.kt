@@ -56,5 +56,5 @@ class JoinAuditQuery(
         /** 经办时间 */
         @SerializedName("aae036")
         val opTime: String
-    ) : XzqhName
+    ) : DivisionName
 }

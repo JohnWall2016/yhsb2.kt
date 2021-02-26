@@ -11,7 +11,7 @@ import yhsb.base.excel.getOrCopyRow
 import yhsb.base.excel.save
 import yhsb.base.text.bar
 import yhsb.base.text.fillRight
-import yhsb.cjb.db.JzfpDb2021
+import yhsb.cjb.db.AuthDb2021
 import yhsb.cjb.db.historyData
 import yhsb.cjb.net.Session
 import yhsb.cjb.net.protocol.*
@@ -82,18 +82,18 @@ class Audit : CommandWithHelp() {
             if (result.isNotEmpty()) {
                 val changeList = mutableListOf<ChangeInfo>()
 
-                JzfpDb2021.use {
+                AuthDb2021.use {
                     for (item in result) {
                         val msg = "${item.idCard} ${item.name.fillRight(6)} ${item.birthDay}"
 
                         val data = historyData.find { it.idCard eq item.idCard }
                         if (data != null) {
-                            println("$msg ${data.jbrdsf} ${if (item.name != data.name) data.name else ""}")
+                            println("$msg ${data.jbKind} ${if (item.name != data.name) data.name else ""}")
                             changeList.add(
                                 ChangeInfo(
                                     item.idCard,
                                     item.name,
-                                    JbKind.nameMap.getOrDefault(data.jbrdsf, "")
+                                    JbKind.nameMap.getOrDefault(data.jbKind, "")
                                 )
                             )
                         } else {

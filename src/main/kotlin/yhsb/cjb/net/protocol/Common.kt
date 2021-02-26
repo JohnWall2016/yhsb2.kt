@@ -92,7 +92,7 @@ class JbKind : MapField() {
     }
 }
 
-object Xzqh {
+object Division {
     val codeMap = mapOf(
         "43030200" to "代发虚拟乡镇",
         "43030201" to "长城乡",
@@ -151,17 +151,17 @@ object Xzqh {
     }
 }
 
-interface XzqhName {
+interface DivisionName {
     val czName: String?
 
     val dwName: String?
-        get() = czName?.run { Xzqh.getDwName(this) }
+        get() = czName?.run { Division.getDwName(this) }
 
     val csName: String?
-        get() = czName?.run { Xzqh.getCsName(this) }
+        get() = czName?.run { Division.getCsName(this) }
 
     val dwAndCsName: Pair<String, String>?
-        get() = czName?.run { Xzqh.getDwAndCsName(this) }
+        get() = czName?.run { Division.getDwAndCsName(this) }
 }
 
 class DfState() : MapField() {

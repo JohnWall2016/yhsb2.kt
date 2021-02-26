@@ -5,7 +5,7 @@ import org.ktorm.entity.filter
 import org.ktorm.entity.first
 import org.ktorm.entity.isNotEmpty
 
-JzfpDb2021.use {
+AuthDb2021.use {
 
     val result = historyData.filter {
         it.idCard eq "430302200101155040"
