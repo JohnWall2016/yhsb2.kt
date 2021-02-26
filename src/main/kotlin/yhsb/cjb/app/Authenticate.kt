@@ -88,12 +88,11 @@ class Authenticate : CommandWithHelp() {
         }
 
         data class FieldCols(
-            val type: String,
-            val detail: String,
             val nameIdCards: NameIdCardCols,
             val neighborhood: String,
             val community: String,
-            val transform: (RawItem) -> RawItem = { it }
+            val type: String? = null,
+            val transform: RawItem.(type: String) -> Unit
         )
 
         private fun fetch(): Iterable<RawItem> = Iterable {
@@ -103,29 +102,27 @@ class Authenticate : CommandWithHelp() {
 
                 for (index in (startRow - 1) until endRow) {
                     sheet.getRow(index)?.apply {
-                        val type = fieldCols.type
-                        val detail = fieldCols.detail
                         val transform = fieldCols.transform
+                        val type = fieldCols.type
                         val neighborhood = getCell(fieldCols.neighborhood).getValue()
                         val community = getCell(fieldCols.community).getValue()
+
 
                         fieldCols.nameIdCards.forEach {
                             val name = getCell(it.first).getValue()
                             val idCard = getCell(it.second).getValue().substring(0, 18).toUpperCase()
                             val birthDay = idCard.substring(6, 14)
+                            val type = if (type != null) getCell(type).getValue() else ""
 
                             yield(
-                                transform(
-                                    RawItem {
-                                        this.name = name
-                                        this.idCard = idCard
-                                        this.birthDay = birthDay
-                                        this.neighborhood = neighborhood
-                                        this.community = community
-                                        this.date = date
-                                        this.type = type
-                                        this.detail = detail
-                                    })
+                                RawItem {
+                                    this.name = name
+                                    this.idCard = idCard
+                                    this.birthDay = birthDay
+                                    this.neighborhood = neighborhood
+                                    this.community = community
+                                    this.date = date
+                                }.apply { transform(type) }
                             )
                         }
                     }
@@ -143,16 +140,17 @@ class Authenticate : CommandWithHelp() {
     class VeryPoor : ImportCommand() {
         override val fieldCols
             get() = FieldCols(
-                "特困人员",
-                "是",
                 NameIdCardCols(
                     "C" to "D"
                 ),
                 "A",
                 "B"
-            )
+            ) {
+                type = "特困人员"
+                detail = "是"
+            }
     }
-
+/*
     @CommandLine.Command(
         name = "csdb",
         description = ["导入城市低保数据"]
@@ -169,4 +167,5 @@ class Authenticate : CommandWithHelp() {
                 "B"
             )
     }
+ */
 }
