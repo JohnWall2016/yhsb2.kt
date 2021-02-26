@@ -132,6 +132,18 @@ interface RawItem : Entity<RawItem> {
 
     /** 数据月份 */
     var date: String
+
+    fun update(item: RawItem) {
+        neighborhood = item.neighborhood
+        community = item.community
+        address = item.address
+        name = item.name
+        idCard = item.idCard
+        birthDay = item.birthDay
+        type = item.type
+        detail = item.detail
+        date = item.date
+    }
 }
 
 object RawData : Table<RawItem>("fprawdata") {
