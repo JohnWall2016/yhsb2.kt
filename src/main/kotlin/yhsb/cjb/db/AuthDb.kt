@@ -9,7 +9,7 @@ import org.ktorm.schema.varchar
 import yhsb.base.db.DbSession
 
 interface DataItem {
-    var no: Int?
+    var no: Int
     var neighborhood: String
     var community: String
     var address: String
@@ -107,7 +107,7 @@ interface RawItem : Entity<RawItem> {
     companion object : Entity.Factory<RawItem>()
 
     /** 序号 */
-    var no: Int?
+    var no: Int
 
     /** 乡镇街 */
     var neighborhood: String
