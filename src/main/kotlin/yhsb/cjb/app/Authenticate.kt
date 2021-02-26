@@ -16,7 +16,8 @@ import yhsb.cjb.db.rawData
 @CommandLine.Command(
     description = ["城居参保身份谁程序"],
     subcommands = [
-        Authenticate.VeryPoor::class
+        Authenticate.VeryPoor::class,
+        Authenticate.CityAllowance::class
     ]
 )
 class Authenticate : CommandWithHelp() {
@@ -83,16 +84,13 @@ class Authenticate : CommandWithHelp() {
             importRawData(fetch())
         }
 
-        class NameIdCardCols(private vararg val cols: Pair<String, String>) : Iterable<Pair<String, String>> {
-            override fun iterator() = cols.iterator()
-        }
-
         data class FieldCols(
-            val nameIdCards: NameIdCardCols,
+            val nameIdCards: List<Pair<String, String>>,
             val neighborhood: String,
             val community: String,
+            val address: String? = null,
             val type: String? = null,
-            val transform: RawItem.(type: String) -> Unit
+            val transform: RawItem.() -> Unit
         )
 
         private fun fetch(): Iterable<RawItem> = Iterable {
@@ -103,27 +101,44 @@ class Authenticate : CommandWithHelp() {
                 for (index in (startRow - 1) until endRow) {
                     sheet.getRow(index)?.apply {
                         val transform = fieldCols.transform
-                        val type = fieldCols.type
+                        val type = fieldCols.type?.let {
+                            getCell(it).getValue()
+                        } ?: ""
+                        val address = fieldCols.address?.let {
+                            getCell(it).getValue()
+                        } ?: ""
                         val neighborhood = getCell(fieldCols.neighborhood).getValue()
                         val community = getCell(fieldCols.community).getValue()
 
-
                         fieldCols.nameIdCards.forEach {
                             val name = getCell(it.first).getValue()
-                            val idCard = getCell(it.second).getValue().substring(0, 18).toUpperCase()
-                            val birthDay = idCard.substring(6, 14)
-                            val type = if (type != null) getCell(type).getValue() else ""
+                            var idCard = getCell(it.second).getValue()
 
-                            yield(
-                                RawItem {
-                                    this.name = name
-                                    this.idCard = idCard
-                                    this.birthDay = birthDay
-                                    this.neighborhood = neighborhood
-                                    this.community = community
-                                    this.date = date
-                                }.apply { transform(type) }
-                            )
+                            if (!Strings.isNullOrEmpty(name) &&
+                                !Strings.isNullOrEmpty(idCard)
+                            ) {
+                                idCard = idCard.trim()
+                                val len = idCard.length
+
+                                if (len < 18) return@forEach
+                                if (len > 18) idCard = idCard.substring(0, 18)
+
+                                idCard = idCard.toUpperCase()
+                                val birthDay = idCard.substring(6, 14)
+
+                                yield(
+                                    RawItem {
+                                        this.name = name
+                                        this.idCard = idCard
+                                        this.birthDay = birthDay
+                                        this.neighborhood = neighborhood
+                                        this.community = community
+                                        this.date = this@ImportCommand.date
+                                        this.address = address
+                                        this.type = type
+                                    }.apply { transform() }
+                                )
+                            }
                         }
                     }
                 }
@@ -139,18 +154,12 @@ class Authenticate : CommandWithHelp() {
     )
     class VeryPoor : ImportCommand() {
         override val fieldCols
-            get() = FieldCols(
-                NameIdCardCols(
-                    "C" to "D"
-                ),
-                "A",
-                "B"
-            ) {
+            get() = FieldCols(listOf("C" to "D"), "A", "B") {
                 type = "特困人员"
                 detail = "是"
             }
     }
-/*
+
     @CommandLine.Command(
         name = "csdb",
         description = ["导入城市低保数据"]
@@ -158,14 +167,24 @@ class Authenticate : CommandWithHelp() {
     class CityAllowance : ImportCommand() {
         override val fieldCols
             get() = FieldCols(
-                "特困人员",
-                "是",
-                NameIdCardCols(
-                    "C" to "D"
+                listOf(
+                    "H" to "I",
+                    "J" to "K",
+                    "L" to "M",
+                    "N" to "O",
+                    "P" to "Q",
                 ),
                 "A",
-                "B"
-            )
+                "B",
+                "D",
+                "F",
+            ) {
+                if (type == "全额救助" || type == "全额") {
+                    type = "全额低保人员"
+                } else {
+                    type = "差额低保人员"
+                }
+            }
     }
- */
+
 }

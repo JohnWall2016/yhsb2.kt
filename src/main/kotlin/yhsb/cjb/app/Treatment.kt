@@ -140,11 +140,11 @@ class Treatment : CommandWithHelp() {
             }
             Files.createDirectory(outputDir)
 
-            for (dw in map.keys) {
+            map.keys.forEach { dw ->
                 println("$dw:")
                 Files.createDirectory(outputDir.resolve(dw))
 
-                for (cs in map[dw]?.keys!!) {
+                map[dw]?.keys?.forEach { cs ->
                     println("  $cs: ${map[dw]?.get(cs)}")
                     Files.createDirectory(outputDir.resolve(Paths.get(dw, cs)))
 
@@ -171,8 +171,8 @@ class Treatment : CommandWithHelp() {
 
             println("\n按分组生成养老金养老金计算表")
             Session.use {
-                for (dw in map.keys) {
-                    for (cs in map[dw]?.keys!!) {
+                map.keys.forEach { dw ->
+                    map[dw]?.keys?.forEach { cs ->
                         map[dw]?.get(cs)?.forEach { index ->
                             val row = sheet.getRow(index)
                             val name = row.getCell("B").getValue()
