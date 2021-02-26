@@ -1,6 +1,7 @@
 package yhsb.cjb.app
 
 import com.google.common.base.Strings
+import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
 import org.ktorm.entity.*
 import picocli.CommandLine
@@ -14,10 +15,12 @@ import yhsb.cjb.db.RawItem
 import yhsb.cjb.db.rawData
 
 @CommandLine.Command(
-    description = ["城居参保身份谁程序"],
+    description = ["城居参保身份认证程序"],
     subcommands = [
         Authenticate.VeryPoor::class,
-        Authenticate.CityAllowance::class
+        Authenticate.CityAllowance::class,
+        Authenticate.CountryAllowance::class,
+        Authenticate.Disability::class,
     ]
 )
 class Authenticate : CommandWithHelp() {
@@ -35,6 +38,10 @@ class Authenticate : CommandWithHelp() {
                     if (!Strings.isNullOrEmpty(item.idCard)) {
                         val result = rawData.filter {
                             it.idCard eq item.idCard
+                        }.filter {
+                            it.type eq item.type
+                        }.filter {
+                            it.date eq item.date
                         }
                         if (result.isNotEmpty()) {
                             result.forEach {
@@ -154,7 +161,11 @@ class Authenticate : CommandWithHelp() {
     )
     class VeryPoor : ImportCommand() {
         override val fieldCols
-            get() = FieldCols(listOf("C" to "D"), "A", "B") {
+            get() = FieldCols(
+                nameIdCards = listOf("C" to "D"),
+                neighborhood = "A",
+                community = "B"
+            ) {
                 type = "特困人员"
                 detail = "是"
             }
@@ -167,22 +178,75 @@ class Authenticate : CommandWithHelp() {
     class CityAllowance : ImportCommand() {
         override val fieldCols
             get() = FieldCols(
-                listOf(
+                nameIdCards = listOf(
                     "H" to "I",
                     "J" to "K",
                     "L" to "M",
                     "N" to "O",
                     "P" to "Q",
                 ),
-                "A",
-                "B",
-                "D",
-                "F",
+                neighborhood = "A",
+                community = "B",
+                address = "D",
+                type = "F",
             ) {
                 if (type == "全额救助" || type == "全额") {
                     type = "全额低保人员"
                 } else {
                     type = "差额低保人员"
+                }
+                detail = "城市"
+            }
+    }
+
+    @CommandLine.Command(
+        name = "ncdb",
+        description = ["导入农村低保数据"]
+    )
+    class CountryAllowance : ImportCommand() {
+        override val fieldCols
+            get() = FieldCols(
+                nameIdCards = listOf(
+                    "G" to "I",
+                    "J" to "K",
+                    "L" to "M",
+                    "N" to "O",
+                    "P" to "Q",
+                    "R" to "S",
+                ),
+                neighborhood = "A",
+                community = "B",
+                address = "D",
+                type = "E",
+            ) {
+                if (type == "全额救助" || type == "全额") {
+                    type = "全额低保人员"
+                } else {
+                    type = "差额低保人员"
+                }
+                detail = "农村"
+            }
+    }
+
+    @CommandLine.Command(
+        name = "cjry",
+        description = ["导入残疾人员数据"]
+    )
+    class Disability : ImportCommand() {
+        override val fieldCols
+            get() = FieldCols(
+                nameIdCards = listOf(
+                    "A" to "B",
+                ),
+                neighborhood = "F",
+                community = "G",
+                address = "H",
+                type = "K",
+            ) {
+                detail = type
+                when (type) {
+                    "一级", "二级" -> type = "一二级残疾人员"
+                    "三级", "四级" -> type = "三四级残疾人员"
                 }
             }
     }
