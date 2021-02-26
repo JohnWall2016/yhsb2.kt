@@ -9,34 +9,36 @@ import org.ktorm.schema.varchar
 import yhsb.base.db.DbSession
 
 interface DataItem {
-    val no: Int
-    val neighborhood: String
-    val community: String
-    val address: String
-    val name: String
-    val idCard: String
-    val birthDay: String
-    val poverty: String
-    val povertyDate: String
-    val veryPoor: String
-    val veryPoorDate: String
-    val fullAllowance: String
-    val fullAllowanceDate: String
-    val shortAllowance: String
-    val shortAllowanceDate: String
-    val primaryDisability: String
-    val primaryDisabilityDate: String
-    val secondaryDisability: String
-    val secondaryDisabilityDate: String
-    val isDestitute: String
-    val jbKind: String
-    val jbKindFirstDate: String
-    val jbKindLastDate: String
-    val jbState: String
-    val jbStateDate: String
+    var no: Int?
+    var neighborhood: String
+    var community: String
+    var address: String
+    var name: String
+    var idCard: String
+    var birthDay: String
+    var poverty: String
+    var povertyDate: String
+    var veryPoor: String
+    var veryPoorDate: String
+    var fullAllowance: String
+    var fullAllowanceDate: String
+    var shortAllowance: String
+    var shortAllowanceDate: String
+    var primaryDisability: String
+    var primaryDisabilityDate: String
+    var secondaryDisability: String
+    var secondaryDisabilityDate: String
+    var isDestitute: String
+    var jbKind: String
+    var jbKindFirstDate: String
+    var jbKindLastDate: String
+    var jbState: String
+    var jbStateDate: String
 }
 
-interface HistoryItem : DataItem, Entity<HistoryItem>
+interface HistoryItem : DataItem, Entity<HistoryItem> {
+    companion object : Entity.Factory<HistoryItem>()
+}
 
 object HistoryData : Table<HistoryItem>("fphistorydata") {
     val no = int("no").primaryKey().bindTo { it.no }
@@ -65,9 +67,10 @@ object HistoryData : Table<HistoryItem>("fphistorydata") {
     val jbState = varchar("jbcbqk").bindTo { it.jbState }
     val jbStateDate = varchar("jbcbqkDate").bindTo { it.jbStateDate }
 }
-
 interface MonthItem : DataItem, Entity<MonthItem> {
-    val month: String
+    companion object : Entity.Factory<MonthItem>()
+
+    var month: String
 }
 
 object MonthData : Table<MonthItem>("fpmonthdata") {
@@ -101,32 +104,34 @@ object MonthData : Table<MonthItem>("fpmonthdata") {
 }
 
 interface RawItem : Entity<RawItem> {
+    companion object : Entity.Factory<RawItem>()
+
     /** 序号 */
-    val no: Int
+    var no: Int?
 
     /** 乡镇街 */
-    val neighborhood: String
+    var neighborhood: String
 
     /** 村社区 */
-    val community: String
+    var community: String
 
     /** 地址 */
-    val address: String
+    var address: String
 
-    val name: String
+    var name: String
 
-    val idCard: String
+    var idCard: String
 
-    val birthDay: String
+    var birthDay: String
 
     /** 人员类型 */
-    val type: String
+    var type: String
 
     /** 类型细节 */
-    val detail: String
+    var detail: String
 
     /** 数据月份 */
-    val date: String
+    var date: String
 }
 
 object RawData : Table<RawItem>("fprawdata") {
@@ -143,32 +148,34 @@ object RawData : Table<RawItem>("fprawdata") {
 }
 
 interface JoinedPerson : Entity<JoinedPerson> {
-    val idCard: String
+    companion object : Entity.Factory<JoinedPerson>()
+
+    var idCard: String
 
     /** 行政区划 */
-    val division: String
+    var division: String
 
     /** 户籍性质 */
-    val familialType: String
+    var familialType: String
 
-    val name: String
+    var name: String
 
     /** 性别 */
-    val sex: String
+    var sex: String
 
-    val birthDay: String
+    var birthDay: String
 
     /** 参保身份 */
-    val jbKind: String
+    var jbKind: String
 
     /** 参保状态 */
-    val cbState: String
+    var cbState: String
 
     /** 缴费状态 */
-    val jfState: String
+    var jfState: String
 
     /** 参保时间 */
-    val joinedTime: String
+    var joinedTime: String
 }
 
 object JoinedPersonData : Table<JoinedPerson>("jbrymx") {

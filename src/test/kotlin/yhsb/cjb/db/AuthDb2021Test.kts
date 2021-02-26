@@ -1,9 +1,7 @@
 package yhsb.cjb.db
 
 import org.ktorm.dsl.eq
-import org.ktorm.entity.filter
-import org.ktorm.entity.first
-import org.ktorm.entity.isNotEmpty
+import org.ktorm.entity.*
 
 AuthDb2021.use {
 
@@ -14,5 +12,15 @@ AuthDb2021.use {
     if (result.isNotEmpty()) {
         println(result.first())
     }
+
 }
 
+val a = HistoryItem()
+println(a)
+
+val b = HistoryItem {
+    idCard = "123"
+    name = "abc"
+}
+println(b)
+println(b.no)
