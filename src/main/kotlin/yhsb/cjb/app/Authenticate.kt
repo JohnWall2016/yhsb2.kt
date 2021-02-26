@@ -247,6 +247,7 @@ class Authenticate : CommandWithHelp() {
                 when (type) {
                     "一级", "二级" -> type = "一二级残疾人员"
                     "三级", "四级" -> type = "三四级残疾人员"
+                    else -> throw Exception("未知残疾类型")
                 }
             }
     }
