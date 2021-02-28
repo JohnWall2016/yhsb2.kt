@@ -32,25 +32,27 @@ class Authenticate : CommandWithHelp() {
 
         fun importRawData(items: Iterable<RawItem>) {
             AuthDb2021.use {
-                items.withIndex().forEach { (index, item) ->
-                    println("${index + 1} ${item.idCard} ${item.name.fillRight(6)} ${item.type}")
+                rawData.run {
+                    items.withIndex().forEach { (index, item) ->
+                        println("${index + 1} ${item.idCard} ${item.name.fillRight(6)} ${item.type}")
 
-                    if (!Strings.isNullOrEmpty(item.idCard)) {
-                        val result = rawData.filter {
-                            it.idCard eq item.idCard
-                        }.filter {
-                            it.type eq item.type
-                        }.filter {
-                            it.date eq item.date
-                        }
-                        if (result.isNotEmpty()) {
-                            result.forEach {
-                                it.update(item)
-                                it.flushChanges()
+                        if (!Strings.isNullOrEmpty(item.idCard)) {
+                            val result = filter {
+                                it.idCard eq item.idCard
+                            }.filter {
+                                it.type eq item.type
+                            }.filter {
+                                it.date eq item.date
                             }
-                        } else {
-                            rawData.add(item)
-                            item.flushChanges()
+                            if (result.isNotEmpty()) {
+                                result.forEach {
+                                    it.update(item)
+                                    it.flushChanges()
+                                }
+                            } else {
+                                result.add(item)
+                                item.flushChanges()
+                            }
                         }
                     }
                 }
@@ -252,4 +254,27 @@ class Authenticate : CommandWithHelp() {
             }
     }
 
+    @CommandLine.Command(
+        name = "hbdc",
+        description = ["合并到扶贫历史数据底册"]
+    )
+    class MergeHistory : CommandWithHelp() {
+        @CommandLine.Parameters(
+            paramLabel = "date",
+            description = ["数据月份, 例如: 201912"]
+        )
+        private var date = ""
+
+        override fun run() {
+            AuthDb2021.use {
+                val rawDataGroups = rawData.filter {
+                    it.date eq date
+                }.groupBy {
+                    it.idCard
+                }
+
+                TODO()
+            }
+        }
+    }
 }

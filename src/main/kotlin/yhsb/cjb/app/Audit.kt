@@ -83,21 +83,23 @@ class Audit : CommandWithHelp() {
                 val changeList = mutableListOf<ChangeInfo>()
 
                 AuthDb2021.use {
-                    for (item in result) {
-                        val msg = "${item.idCard} ${item.name.fillRight(6)} ${item.birthDay}"
+                    historyData.run {
+                        for (item in result) {
+                            val msg = "${item.idCard} ${item.name.fillRight(6)} ${item.birthDay}"
 
-                        val data = historyData.find { it.idCard eq item.idCard }
-                        if (data != null) {
-                            println("$msg ${data.jbKind} ${if (item.name != data.name) data.name else ""}")
-                            changeList.add(
-                                ChangeInfo(
-                                    item.idCard,
-                                    item.name,
-                                    JbKind.nameMap.getOrDefault(data.jbKind, "")
+                            val data = find { it.idCard eq item.idCard }
+                            if (data != null) {
+                                println("$msg ${data.jbKind} ${if (item.name != data.name) data.name else ""}")
+                                changeList.add(
+                                    ChangeInfo(
+                                        item.idCard,
+                                        item.name,
+                                        JbKind.nameMap.getOrDefault(data.jbKind, "")
+                                    )
                                 )
-                            )
-                        } else {
-                            println(msg)
+                            } else {
+                                println(msg)
+                            }
                         }
                     }
                 }
