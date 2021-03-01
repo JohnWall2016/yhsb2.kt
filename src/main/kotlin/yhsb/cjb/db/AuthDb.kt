@@ -1,8 +1,8 @@
 package yhsb.cjb.db
 
+import com.google.common.base.Strings
 import org.ktorm.database.Database
-import org.ktorm.entity.Entity
-import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.*
 import org.ktorm.schema.Table
 import org.ktorm.schema.int
 import org.ktorm.schema.varchar
@@ -34,6 +34,109 @@ interface DataItem {
     var jbKindLastDate: String
     var jbState: String
     var jbStateDate: String
+}
+
+fun <T : DataItem> T.merge(item: RawItem): Boolean {
+    var changed = false
+
+    if (Strings.isNullOrEmpty(neighborhood) &&
+            !Strings.isNullOrEmpty(item.neighborhood)) {
+        neighborhood = item.neighborhood
+        changed = true
+    }
+
+    if (Strings.isNullOrEmpty(community) &&
+        !Strings.isNullOrEmpty(item.community)) {
+        community = item.community
+        changed = true
+    }
+
+    if (Strings.isNullOrEmpty(address) &&
+        !Strings.isNullOrEmpty(item.address)) {
+        address = item.address
+        changed = true
+    }
+
+    if (Strings.isNullOrEmpty(name) &&
+        !Strings.isNullOrEmpty(item.name)) {
+        name = item.name
+        changed = true
+    }
+
+    if (Strings.isNullOrEmpty(idCard) &&
+        !Strings.isNullOrEmpty(item.idCard)) {
+        idCard = item.idCard
+        changed = true
+    }
+
+    if (Strings.isNullOrEmpty(birthDay) &&
+        !Strings.isNullOrEmpty(item.birthDay)) {
+        birthDay = item.birthDay
+        changed = true
+    }
+
+    when (item.type) {
+        "贫困人口" -> {
+            if (Strings.isNullOrEmpty(poverty)) {
+                poverty = item.detail
+                povertyDate = item.date
+                changed = true
+            }
+            if (Strings.isNullOrEmpty(isDestitute)) {
+                isDestitute = item.type
+                changed = true
+            }
+        }
+        "特困人员" -> {
+            if (Strings.isNullOrEmpty(veryPoor)) {
+                veryPoor = item.detail
+                veryPoorDate = item.date
+                changed = true
+            }
+            if (Strings.isNullOrEmpty(isDestitute)) {
+                isDestitute = item.type
+                changed = true
+            }
+        }
+        "全额低保人员" -> {
+            if (Strings.isNullOrEmpty(fullAllowance)) {
+                fullAllowance = item.detail
+                fullAllowanceDate = item.date
+                changed = true
+            }
+            if (Strings.isNullOrEmpty(isDestitute)) {
+                isDestitute = "低保对象"
+                changed = true
+            }
+        }
+        "差额低保人员" -> {
+            if (Strings.isNullOrEmpty(shortAllowance)) {
+                shortAllowance = item.detail
+                shortAllowanceDate = item.date
+                changed = true
+            }
+            if (Strings.isNullOrEmpty(isDestitute)) {
+                isDestitute = "低保对象"
+                changed = true
+            }
+        }
+        "一二级残疾人员" -> {
+            if (Strings.isNullOrEmpty(primaryDisability)) {
+                primaryDisability = item.detail
+                primaryDisabilityDate = item.date
+                changed = true
+            }
+        }
+        "三四级残疾人员" -> {
+            if (Strings.isNullOrEmpty(secondaryDisability)) {
+                secondaryDisability = item.detail
+                secondaryDisabilityDate = item.date
+                changed = true
+            }
+        }
+    }
+
+    return changed
 }
 
 interface HistoryItem : DataItem, Entity<HistoryItem> {
