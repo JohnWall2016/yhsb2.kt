@@ -1,16 +1,19 @@
 package yhsb.cjb.app
 
 import com.google.common.base.Strings
-import org.ktorm.dsl.eq
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.Workbook
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import picocli.CommandLine
 import yhsb.base.cmd.CommandWithHelp
+import yhsb.base.datetime.DateTime
 import yhsb.base.db.loadExcel
-import yhsb.base.excel.Excel
-import yhsb.base.excel.getCell
-import yhsb.base.excel.getValue
+import yhsb.base.excel.*
 import yhsb.base.text.fillRight
 import yhsb.cjb.db.*
+import java.nio.file.Files
+import java.nio.file.Paths
 
 @CommandLine.Command(
     description = ["城居参保身份认证程序"],
@@ -21,8 +24,11 @@ import yhsb.cjb.db.*
         Authenticate.Disability::class,
         Authenticate.MergeHistory::class,
         Authenticate.GenerateBook::class,
-        Authenticate.Authenticate::class,
-        Authenticate.ImportJbData::class
+        Authenticate.AuthData::class,
+        Authenticate.ImportJbData::class,
+        Authenticate.UpdateJbState::class,
+        Authenticate.ExportData::class,
+        Authenticate.ExportChangedData::class,
     ]
 )
 class Authenticate : CommandWithHelp() {
@@ -173,10 +179,68 @@ class Authenticate : CommandWithHelp() {
                 }
             }
         }
+
+        fun exportData(monthOrAll: String, templateExcel: String, saveExcel: String) {
+            println("开始导出扶贫底册: ${monthOrAll}扶贫数据=>${saveExcel}")
+
+            val workbook = Excel.load(templateExcel)
+            val sheet = workbook.getSheetAt(0)
+            val startRow = 2
+            var currentRow = startRow
+
+            AuthDb2021.use {
+                val data = if (monthOrAll.toUpperCase() == "ALL") {
+                    historyData
+                } else {
+                    monthData.filter {
+                        it.month eq monthOrAll
+                    }
+                }
+
+                data.forEach {
+                    val index = currentRow - startRow + 1
+
+                    println("$index ${it.idCard} ${it.name}")
+
+                    sheet.getOrCopyRow(currentRow++, startRow).apply {
+                        getCell("A").setValue(index)
+                        getCell("B").setValue(it.no)
+                        getCell("C").setValue(it.neighborhood)
+                        getCell("D").setValue(it.community)
+                        getCell("E").setValue(it.address)
+                        getCell("F").setValue(it.name)
+                        getCell("G").setValue(it.idCard)
+                        getCell("H").setValue(it.birthDay)
+                        getCell("I").setValue(it.poverty)
+                        getCell("J").setValue(it.povertyDate)
+                        getCell("K").setValue(it.veryPoor)
+                        getCell("L").setValue(it.veryPoorDate)
+                        getCell("M").setValue(it.fullAllowance)
+                        getCell("N").setValue(it.fullAllowanceDate)
+                        getCell("O").setValue(it.shortAllowance)
+                        getCell("P").setValue(it.shortAllowanceDate)
+                        getCell("Q").setValue(it.primaryDisability)
+                        getCell("R").setValue(it.primaryDisabilityDate)
+                        getCell("S").setValue(it.secondaryDisability)
+                        getCell("T").setValue(it.secondaryDisabilityDate)
+                        getCell("U").setValue(it.isDestitute)
+                        getCell("V").setValue(it.jbKind)
+                        getCell("W").setValue(it.jbKindFirstDate)
+                        getCell("X").setValue(it.jbKindLastDate)
+                        getCell("Y").setValue(it.jbState)
+                        getCell("Z").setValue(it.jbStateDate)
+                    }
+                }
+            }
+
+            workbook.save(saveExcel)
+
+            println("结束导出扶贫底册: ${monthOrAll}扶贫数据=>${saveExcel}")
+        }
     }
 
     override fun run() {
-        CommandLine.usage(Authenticate(), System.out)
+        CommandLine.usage(AuthData(), System.out)
     }
 
     abstract class ImportCommand : CommandWithHelp() {
@@ -429,7 +493,7 @@ class Authenticate : CommandWithHelp() {
         name = "rdsf",
         description = ["认定居保身份"]
     )
-    class Authenticate : CommandWithHelp() {
+    class AuthData : CommandWithHelp() {
         @CommandLine.Parameters(
             paramLabel = "monthOrAll",
             description = ["数据月份, 例如: 201912, ALL"]
@@ -492,12 +556,196 @@ class Authenticate : CommandWithHelp() {
             println("开始导入居保参保人员明细表")
 
             AuthDb2021.use {
-                joinedPersonData.loadExcel(excel, startRow, endRow,
+                joinedPersonData.loadExcel(
+                    excel, startRow, endRow,
                     listOf("E", "A", "B", "C", "F", "G", "I", "K", "L", "O")
                 )
             }
 
             println("结束导入居保参保人员明细表")
+        }
+    }
+
+    @CommandLine.Command(
+        name = "jbzt",
+        description = ["更新居保参保状态"]
+    )
+    class UpdateJbState : CommandWithHelp() {
+        @CommandLine.Parameters(
+            paramLabel = "monthOrAll",
+            description = ["数据月份, 例如: 201912, ALL"]
+        )
+        private var monthOrAll = ""
+
+        @CommandLine.Parameters(
+            paramLabel = "date",
+            description = ["数据月份，例如：201912"]
+        )
+        private var date = ""
+
+        companion object {
+            val jbStateMap = listOf(
+                Tuple3(1, 3, "正常待遇"),
+                Tuple3(2, 3, "暂停待遇"),
+                Tuple3(4, 3, "终止参保"),
+                Tuple3(1, 1, "正常缴费"),
+                Tuple3(2, 2, "暂停缴费"),
+            )
+        }
+
+        override fun run() {
+            println("开始更新居保状态: ${monthOrAll}扶贫数据底册")
+
+            AuthDb2021.use {
+                useConnection {
+                    val stmt = it.createStatement()
+                    val peopleTable = "jbrymx"
+                    if (monthOrAll.toUpperCase() == "ALL") {
+                        val dataTable = "fphistorydata"
+                        for ((cbState, jfState, jbState) in jbStateMap) {
+                            val sql = "update $dataTable $peopleTable\n" +
+                                    "    set ${dataTable}.jbcbqk='$jbState',\n" +
+                                    "        ${dataTable}.jbcbqkDate='$date'\n" +
+                                    " where ${dataTable}.idcard=${peopleTable}.idcard\n" +
+                                    "   and ${peopleTable}.cbzt='$cbState'\n" +
+                                    "   and ${peopleTable}.jfzt='$jfState'\n"
+                            println(sql)
+                            stmt.execute(sql)
+                        }
+                    } else {
+                        val dataTable = "fpmonthdata"
+                        for ((cbState, jfState, jbState) in jbStateMap) {
+                            val sql = "update $dataTable $peopleTable\n" +
+                                    "    set ${dataTable}.jbcbqk='$jbState',\n" +
+                                    "        ${dataTable}.jbcbqkDate='$date'\n" +
+                                    " where ${dataTable}.month='$monthOrAll'" +
+                                    "   and ${dataTable}.idcard=${peopleTable}.idcard\n" +
+                                    "   and ${peopleTable}.cbzt='$cbState'\n" +
+                                    "   and ${peopleTable}.jfzt='$jfState'\n"
+                            println(sql)
+                            stmt.execute(sql)
+                        }
+                    }
+                }
+            }
+
+            println("结束更新居保状态: ${monthOrAll}扶贫数据底册")
+        }
+    }
+
+    @CommandLine.Command(
+        name = "dcsj",
+        description = ["导出扶贫底册数据"]
+    )
+    class ExportData : CommandWithHelp() {
+        @CommandLine.Parameters(
+            paramLabel = "monthOrAll",
+            description = ["数据月份, 例如: 201912, ALL"]
+        )
+        private var monthOrAll = ""
+
+        override fun run() {
+            val fileName = if (monthOrAll.toUpperCase() == "ALL") {
+                """D:\精准扶贫\2020年度扶贫数据底册${DateTime.format()}.xlsx"""
+            } else {
+                """D:\精准扶贫\${monthOrAll}扶贫数据底册${DateTime.format()}.xlsx"""
+            }
+
+            exportData(monthOrAll, """D:\精准扶贫\雨湖区精准扶贫底册模板.xlsx""", fileName)
+        }
+    }
+
+    @CommandLine.Command(
+        name = "sfbg",
+        description = ["导出居保参保身份变更信息表"]
+    )
+    class ExportChangedData : CommandWithHelp() {
+        @CommandLine.Parameters(
+            paramLabel = "outputDir",
+            description = ["导出目录"]
+        )
+        private var outputDir = ""
+
+        companion object {
+            val jbStateMap = listOf(
+                Pair("贫困人口一级", "051"),
+                Pair("特困一级", "031"),
+                Pair("低保对象一级", "061"),
+                Pair("低保对象二级", "062"),
+                Pair("残一级", "021"),
+                Pair("残二级", "022"),
+            )
+        }
+
+        override fun run() {
+            val template = """D:\精准扶贫\批量信息变更模板.xls"""
+            val rowsPerExcel = 500
+
+            if (Files.exists(Paths.get(outputDir))) {
+                Files.createDirectory(Paths.get(outputDir))
+            } else {
+                println("目录已存在: $outputDir")
+                return
+            }
+
+            data class ChangedData(val name: String?, val idCard: String?, val code: String)
+
+            println("从 扶贫历史数据底册 和 居保参保人员明细表 导出信息变更表")
+
+            AuthDb2021.use {
+                for ((type, code) in jbStateMap) {
+                    val changedData = from(HistoryData)
+                        .innerJoin(JoinedPersonData, on = HistoryData.idCard eq JoinedPersonData.idCard)
+                        .select(JoinedPersonData.name, JoinedPersonData.idCard)
+                        .where {
+                            HistoryData.jbKind eq type
+                        }
+                        .where {
+                            JoinedPersonData.jbKind notEq code
+                        }
+                        .where {
+                            JoinedPersonData.cbState eq "1"
+                        }
+                        .where {
+                            JoinedPersonData.jfState eq "1"
+                        }.map {
+                            ChangedData(it[JoinedPersonData.name], it[JoinedPersonData.idCard], code)
+                        }
+                    if (changedData.isNotEmpty()) {
+                        println("开始导出 $type 批量信息变更表")
+
+                        var i = 0
+                        var files = 0
+                        var workbook: Workbook? = null
+                        var sheet: Sheet? = null
+                        val startRow = 1
+                        var currentRow = startRow
+
+                        changedData.forEach {
+                            if (i++ % rowsPerExcel == 0) {
+                                if (workbook != null) {
+                                    workbook?.save(Paths.get(outputDir, "${type}批量信息变更表${++files}.xls"))
+                                    workbook = null
+                                }
+                                if (workbook == null) {
+                                    workbook = Excel.load(template)
+                                    sheet = workbook?.getSheetAt(0)
+                                    currentRow = 1
+                                }
+                            }
+                            sheet?.getOrCopyRow(currentRow++, startRow, false)?.apply {
+                                getCell("B").setValue(it.idCard)
+                                getCell("E").setValue(it.name)
+                                getCell("J").setValue(it.code)
+                            }
+                            if (workbook != null) {
+                                workbook?.save(Paths.get(outputDir, "${type}批量信息变更表${++files}.xls"))
+                            }
+                        }
+                        println("结束导出 $type 批量信息变更表: $i 条")
+                    }
+                }
+            }
         }
     }
 }

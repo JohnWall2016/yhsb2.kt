@@ -65,6 +65,10 @@ execTask("cjb.delegate", "代发数据导出制表程序") {
     main = "yhsb.cjb.app.Delegate"
 }
 
+execTask("cjb.auth", "城居参保身份认证程序") {
+    main = "yhsb.cjb.app.Authenticate"
+}
+
 task("list") {
     doLast {
         val len = execTasks.keys.fold(0) { acc, name ->
