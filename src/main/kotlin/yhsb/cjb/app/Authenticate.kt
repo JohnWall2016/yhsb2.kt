@@ -8,6 +8,7 @@ import org.ktorm.entity.*
 import picocli.CommandLine
 import yhsb.base.cmd.CommandWithHelp
 import yhsb.base.datetime.DateTime
+import yhsb.base.db.execute
 import yhsb.base.db.loadExcel
 import yhsb.base.excel.*
 import yhsb.base.text.fillRight
@@ -598,7 +599,6 @@ class Authenticate : CommandWithHelp() {
 
             AuthDb2021.use {
                 useConnection {
-                    val stmt = it.createStatement()
                     val peopleTable = "jbrymx"
                     if (monthOrAll.toUpperCase() == "ALL") {
                         val dataTable = "fphistorydata"
@@ -609,8 +609,7 @@ class Authenticate : CommandWithHelp() {
                                     " where ${dataTable}.idcard=${peopleTable}.idcard\n" +
                                     "   and ${peopleTable}.cbzt='$cbState'\n" +
                                     "   and ${peopleTable}.jfzt='$jfState'\n"
-                            println(sql)
-                            stmt.execute(sql)
+                            it.execute(sql, true)
                         }
                     } else {
                         val dataTable = "fpmonthdata"
@@ -622,8 +621,7 @@ class Authenticate : CommandWithHelp() {
                                     "   and ${dataTable}.idcard=${peopleTable}.idcard\n" +
                                     "   and ${peopleTable}.cbzt='$cbState'\n" +
                                     "   and ${peopleTable}.jfzt='$jfState'\n"
-                            println(sql)
-                            stmt.execute(sql)
+                            it.execute(sql, true)
                         }
                     }
                 }

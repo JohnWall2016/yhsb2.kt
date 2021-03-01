@@ -12,6 +12,7 @@ import yhsb.base.util.Config
 import yhsb.base.util.toMap
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.sql.Connection
 
 open class DbSession(private val configPrefix: String) {
     fun getConnection(): Database {
@@ -27,6 +28,20 @@ open class DbSession(private val configPrefix: String) {
 
     fun <T> use(func: Database.() -> T): T {
         return getConnection().func()
+    }
+}
+
+fun Database.execute(sql: String, printSql: Boolean = false, indent: String = ""): Int {
+    return useConnection {
+        execute(sql, printSql, indent)
+    }
+}
+
+fun Connection.execute(sql: String, printSql: Boolean = false, indent: String = ""): Int {
+    if (printSql) println("$indent$sql")
+    return createStatement().run {
+        execute(sql)
+        updateCount
     }
 }
 
@@ -68,12 +83,7 @@ fun <E : Any, T : BaseTable<E>> EntitySequence<E, T>.loadExcel(
             "CHARACTER SET utf8 FIELDS TERMINATED BY ',' OPTIONALLY " +
             "ENCLOSED BY '\\'' LINES TERMINATED BY '\\n';"
 
-    val updateCount = this.database.useConnection {
-        it.createStatement().run {
-            execute(sql)
-            updateCount
-        }
-    }
+    val updateCount = this.database.execute(sql, true)
 
     Files.delete(tmpFile)
 
