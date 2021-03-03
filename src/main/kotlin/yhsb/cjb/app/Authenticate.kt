@@ -8,6 +8,7 @@ import org.ktorm.entity.*
 import picocli.CommandLine
 import yhsb.base.cmd.CommandWithHelp
 import yhsb.base.datetime.DateTime
+import yhsb.base.db.convert
 import yhsb.base.db.execute
 import yhsb.base.db.loadExcel
 import yhsb.base.excel.*
@@ -195,11 +196,19 @@ class Authenticate : CommandWithHelp() {
 
             AuthDb2021.use {
                 val data = if (monthOrAll.toUpperCase() == "ALL") {
-                    historyData
+                    historyData.sortedBy(
+                        { it.neighborhood.convert("gbk").asc() },
+                        { it.community.convert("gbk").asc() },
+                        { it.name.convert("gbk").asc() },
+                    )
                 } else {
                     monthData.filter {
                         it.month eq monthOrAll
-                    }
+                    }.sortedBy(
+                        { it.neighborhood.convert("gbk").asc() },
+                        { it.community.convert("gbk").asc() },
+                        { it.name.convert("gbk").asc() },
+                    )
                 }
 
                 data.forEach {
