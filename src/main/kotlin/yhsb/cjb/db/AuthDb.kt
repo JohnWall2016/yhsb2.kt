@@ -10,125 +10,125 @@ import yhsb.base.db.DbSession
 
 interface DataItem {
     var no: Int
-    var neighborhood: String
-    var community: String
-    var address: String
-    var name: String
-    var idCard: String
-    var birthDay: String
-    var poverty: String
-    var povertyDate: String
-    var veryPoor: String
-    var veryPoorDate: String
-    var fullAllowance: String
-    var fullAllowanceDate: String
-    var shortAllowance: String
-    var shortAllowanceDate: String
-    var primaryDisability: String
-    var primaryDisabilityDate: String
-    var secondaryDisability: String
-    var secondaryDisabilityDate: String
-    var isDestitute: String
-    var jbKind: String
-    var jbKindFirstDate: String
-    var jbKindLastDate: String
-    var jbState: String
-    var jbStateDate: String
+    var neighborhood: String?
+    var community: String?
+    var address: String?
+    var name: String?
+    var idCard: String?
+    var birthDay: String?
+    var poverty: String?
+    var povertyDate: String?
+    var veryPoor: String?
+    var veryPoorDate: String?
+    var fullAllowance: String?
+    var fullAllowanceDate: String?
+    var shortAllowance: String?
+    var shortAllowanceDate: String?
+    var primaryDisability: String?
+    var primaryDisabilityDate: String?
+    var secondaryDisability: String?
+    var secondaryDisabilityDate: String?
+    var isDestitute: String?
+    var jbKind: String?
+    var jbKindFirstDate: String?
+    var jbKindLastDate: String?
+    var jbState: String?
+    var jbStateDate: String?
 }
 
 fun <T : DataItem> T.merge(item: RawItem): Boolean {
     var changed = false
 
-    if (Strings.isNullOrEmpty(neighborhood) &&
-            !Strings.isNullOrEmpty(item.neighborhood)) {
+    if (neighborhood.isNullOrEmpty() &&
+            !item.neighborhood.isEmpty()) {
         neighborhood = item.neighborhood
         changed = true
     }
 
-    if (Strings.isNullOrEmpty(community) &&
-        !Strings.isNullOrEmpty(item.community)) {
+    if (community.isNullOrEmpty() &&
+        !item.community.isEmpty()) {
         community = item.community
         changed = true
     }
 
-    if (Strings.isNullOrEmpty(address) &&
-        !Strings.isNullOrEmpty(item.address)) {
+    if (address.isNullOrEmpty() &&
+        !item.address.isEmpty()) {
         address = item.address
         changed = true
     }
 
-    if (Strings.isNullOrEmpty(name) &&
-        !Strings.isNullOrEmpty(item.name)) {
+    if (name.isNullOrEmpty() &&
+        !item.name.isEmpty()) {
         name = item.name
         changed = true
     }
 
-    if (Strings.isNullOrEmpty(idCard) &&
-        !Strings.isNullOrEmpty(item.idCard)) {
+    if (idCard.isNullOrEmpty() &&
+        !item.idCard.isEmpty()) {
         idCard = item.idCard
         changed = true
     }
 
-    if (Strings.isNullOrEmpty(birthDay) &&
-        !Strings.isNullOrEmpty(item.birthDay)) {
+    if (birthDay.isNullOrEmpty() &&
+        !item.birthDay.isEmpty()) {
         birthDay = item.birthDay
         changed = true
     }
 
     when (item.type) {
         "贫困人口" -> {
-            if (Strings.isNullOrEmpty(poverty)) {
+            if (poverty.isNullOrEmpty()) {
                 poverty = item.detail
                 povertyDate = item.date
                 changed = true
             }
-            if (Strings.isNullOrEmpty(isDestitute)) {
+            if (isDestitute.isNullOrEmpty()) {
                 isDestitute = item.type
                 changed = true
             }
         }
         "特困人员" -> {
-            if (Strings.isNullOrEmpty(veryPoor)) {
+            if (veryPoor.isNullOrEmpty()) {
                 veryPoor = item.detail
                 veryPoorDate = item.date
                 changed = true
             }
-            if (Strings.isNullOrEmpty(isDestitute)) {
+            if (isDestitute.isNullOrEmpty()) {
                 isDestitute = item.type
                 changed = true
             }
         }
         "全额低保人员" -> {
-            if (Strings.isNullOrEmpty(fullAllowance)) {
+            if (fullAllowance.isNullOrEmpty()) {
                 fullAllowance = item.detail
                 fullAllowanceDate = item.date
                 changed = true
             }
-            if (Strings.isNullOrEmpty(isDestitute)) {
+            if (isDestitute.isNullOrEmpty()) {
                 isDestitute = "低保对象"
                 changed = true
             }
         }
         "差额低保人员" -> {
-            if (Strings.isNullOrEmpty(shortAllowance)) {
+            if (shortAllowance.isNullOrEmpty()) {
                 shortAllowance = item.detail
                 shortAllowanceDate = item.date
                 changed = true
             }
-            if (Strings.isNullOrEmpty(isDestitute)) {
+            if (isDestitute.isNullOrEmpty()) {
                 isDestitute = "低保对象"
                 changed = true
             }
         }
         "一二级残疾人员" -> {
-            if (Strings.isNullOrEmpty(primaryDisability)) {
+            if (primaryDisability.isNullOrEmpty()) {
                 primaryDisability = item.detail
                 primaryDisabilityDate = item.date
                 changed = true
             }
         }
         "三四级残疾人员" -> {
-            if (Strings.isNullOrEmpty(secondaryDisability)) {
+            if (secondaryDisability.isNullOrEmpty()) {
                 secondaryDisability = item.detail
                 secondaryDisabilityDate = item.date
                 changed = true

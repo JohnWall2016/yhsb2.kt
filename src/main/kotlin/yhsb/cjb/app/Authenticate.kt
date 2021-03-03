@@ -45,7 +45,7 @@ class Authenticate : CommandWithHelp() {
                     items.withIndex().forEach { (index, item) ->
                         println("${index + 1} ${item.idCard} ${item.name.fillRight(6)} ${item.type}")
 
-                        if (!Strings.isNullOrEmpty(item.idCard)) {
+                        if (item.idCard.isNotEmpty()) {
                             val result = filter {
                                 it.idCard eq item.idCard
                             }.filter {
@@ -146,31 +146,31 @@ class Authenticate : CommandWithHelp() {
                 data.forEach {
                     var jbKind: String? = null
                     var isDestitute: String? = null
-                    if (!Strings.isNullOrEmpty(it.poverty)) {
+                    if (!it.poverty.isNullOrEmpty()) {
                         jbKind = "贫困人口一级"
                         isDestitute = "贫困人口"
-                    } else if (!Strings.isNullOrEmpty(it.veryPoor)) {
+                    } else if (!it.veryPoor.isNullOrEmpty()) {
                         jbKind = "特困一级"
                         isDestitute = "特困人员"
-                    } else if (!Strings.isNullOrEmpty(it.fullAllowance)) {
+                    } else if (!it.fullAllowance.isNullOrEmpty()) {
                         jbKind = "低保对象一级"
                         isDestitute = "低保对象"
-                    } else if (!Strings.isNullOrEmpty(it.primaryDisability)) {
+                    } else if (!it.primaryDisability.isNullOrEmpty()) {
                         jbKind = "残一级"
-                    } else if (!Strings.isNullOrEmpty(it.shortAllowance)) {
+                    } else if (!it.shortAllowance.isNullOrEmpty()) {
                         jbKind = "低保对象二级"
                         isDestitute = "低保对象"
-                    } else if (!Strings.isNullOrEmpty(it.secondaryDisability)) {
+                    } else if (!it.secondaryDisability.isNullOrEmpty()) {
                         jbKind = "残二级"
                     }
                     var updated = false
                     if (jbKind != null && jbKind != it.jbKind) {
-                        if (!Strings.isNullOrEmpty(it.jbKind)) {
-                            println("${index++} ${it.idCard} ${it.name.fillRight(6)} $jbKind <- ${it.jbKind}")
+                        if (!it.jbKind.isNullOrEmpty()) {
+                            println("${index++} ${it.idCard} ${it.name?.fillRight(6)} $jbKind <- ${it.jbKind}")
                             it.jbKind = jbKind
                             it.jbKindLastDate = date
                         } else {
-                            println("${index++} ${it.idCard} ${it.name.fillRight(6)} $jbKind")
+                            println("${index++} ${it.idCard} ${it.name?.fillRight(6)} $jbKind")
                             it.jbKind = jbKind
                             it.jbKindLastDate = date
                         }
@@ -307,8 +307,8 @@ class Authenticate : CommandWithHelp() {
                             val name = getCell(it.first).getValue()
                             var idCard = getCell(it.second).getValue()
 
-                            if (!Strings.isNullOrEmpty(name) &&
-                                !Strings.isNullOrEmpty(idCard)
+                            if (!name.isEmpty() &&
+                                !idCard.isEmpty()
                             ) {
                                 idCard = idCard.trim()
                                 val len = idCard.length
