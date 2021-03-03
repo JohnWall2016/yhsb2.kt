@@ -5,10 +5,7 @@ import org.ktorm.entity.find
 import picocli.CommandLine
 import yhsb.base.cmd.CommandWithHelp
 import yhsb.base.datetime.DateTime
-import yhsb.base.excel.Excel
-import yhsb.base.excel.getCell
-import yhsb.base.excel.getOrCopyRow
-import yhsb.base.excel.save
+import yhsb.base.excel.*
 import yhsb.base.text.bar
 import yhsb.base.text.fillRight
 import yhsb.cjb.db.AuthDb2021
@@ -112,9 +109,9 @@ class Audit : CommandWithHelp() {
 
                     changeList.forEach {
                         sheet.getOrCopyRow(index++, copyIndex, false).apply {
-                            getCell("B").setCellValue(it.idCard)
-                            getCell("E").setCellValue(it.name)
-                            getCell("J").setCellValue(it.kind)
+                            getCell("B").setValue(it.idCard)
+                            getCell("E").setValue(it.name)
+                            getCell("J").setValue(it.kind)
                         }
                     }
 

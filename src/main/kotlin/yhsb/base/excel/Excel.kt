@@ -189,14 +189,14 @@ fun Sheet.getCell(address: String): Cell {
  */
 fun Sheet.getCell(row: Int, column: Int): Cell = getRow(row).getCell(column)
 
-fun Sheet.getCell(row: Int, columnName: String): Cell =
+fun Sheet.getCell(row: Int, columnName: String): Cell? =
     getRow(row).getCell(columnName)
 
 /**
  * get cell from column name
  * @param column format "[A-Z]+"
  */
-fun Row.getCell(column: String): Cell = getCell(CellRef.columnNameToNumber(column) - 1)
+fun Row.getCell(column: String): Cell? = getCell(CellRef.columnNameToNumber(column) - 1)
 
 fun Row.createCell(columnName: String): Cell = createCell(CellRef.columnNameToNumber(columnName) - 1)
 
@@ -233,10 +233,10 @@ fun Cell.getString(type: CellType): String {
     }
 }
 
-fun Cell.setValue(v: String?) = if (v != null) setCellValue(v) else setBlank()
-fun Cell.setValue(v: Double?) = if (v != null) setCellValue(v) else setBlank()
-fun Cell.setValue(v: BigDecimal?) = if (v != null) setCellValue(v.toDouble()) else setBlank()
-fun Cell.setValue(v: Int?) = if (v != null) setCellValue(v.toDouble()) else setBlank()
+fun Cell?.setValue(v: String?) = if (v != null) this?.setCellValue(v) else this?.setBlank()
+fun Cell?.setValue(v: Double?) = if (v != null) this?.setCellValue(v) else this?.setBlank()
+fun Cell?.setValue(v: BigDecimal?) = if (v != null) this?.setCellValue(v.toDouble()) else this?.setBlank()
+fun Cell?.setValue(v: Int?) = if (v != null) this?.setCellValue(v.toDouble()) else this?.setBlank()
 
 class CellRef(
     val row: Int, val column: Int,

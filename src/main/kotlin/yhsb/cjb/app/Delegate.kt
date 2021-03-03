@@ -223,7 +223,7 @@ class Delegate : CommandWithHelp() {
                                         startDate,
                                         endDate,
                                         detail.amount,
-                                        list.bankType ?: "未绑定支付账户"
+                                        if (list.bankType != null) "" else "未绑定支付账户"
                                     )
                                 )
                             }

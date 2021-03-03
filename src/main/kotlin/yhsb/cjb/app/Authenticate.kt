@@ -59,7 +59,7 @@ class Authenticate : CommandWithHelp() {
                                     it.flushChanges()
                                 }
                             } else {
-                                result.add(item)
+                                this.add(item)
                                 item.flushChanges()
                             }
                         }
@@ -76,9 +76,11 @@ class Authenticate : CommandWithHelp() {
                     it.idCard
                 }
 
+                var index = 1
                 if (month == null) {
                     historyData.let {
                         rawDataGroups.forEach { (idCard, groups) ->
+                            println("${index++} $idCard")
                             val data = it.filter {
                                 it.idCard eq idCard
                             }
@@ -86,15 +88,15 @@ class Authenticate : CommandWithHelp() {
                                 data.forEach { item ->
                                     groups.forEach { rawItem ->
                                         item.merge(rawItem)
-                                        item.flushChanges()
                                     }
+                                    item.flushChanges()
                                 }
                             } else {
                                 val item = HistoryItem()
                                 groups.forEach { rawItem ->
                                     item.merge(rawItem)
                                 }
-                                data.add(item)
+                                it.add(item)
                                 item.flushChanges()
                             }
                         }
@@ -102,6 +104,7 @@ class Authenticate : CommandWithHelp() {
                 } else {
                     monthData.let {
                         rawDataGroups.forEach { (idCard, groups) ->
+                            println("${index++} $idCard")
                             val data = it.filter {
                                 it.idCard eq idCard
                             }.filter {
@@ -111,8 +114,8 @@ class Authenticate : CommandWithHelp() {
                                 data.forEach { item ->
                                     groups.forEach { rawItem ->
                                         item.merge(rawItem)
-                                        item.flushChanges()
                                     }
+                                    item.flushChanges()
                                 }
                             } else {
                                 val item = MonthItem {
@@ -121,7 +124,7 @@ class Authenticate : CommandWithHelp() {
                                 groups.forEach { rawItem ->
                                     item.merge(rawItem)
                                 }
-                                data.add(item)
+                                it.add(item)
                                 item.flushChanges()
                             }
                         }
@@ -344,9 +347,10 @@ class Authenticate : CommandWithHelp() {
     class VeryPoor : ImportCommand() {
         override val fieldCols
             get() = FieldCols(
-                nameIdCards = listOf("C" to "D"),
-                neighborhood = "A",
-                community = "B"
+                nameIdCards = listOf("G" to "H"),
+                neighborhood = "C",
+                community = "D",
+                address = "E"
             ) {
                 type = "特困人员"
                 detail = "是"
@@ -361,21 +365,21 @@ class Authenticate : CommandWithHelp() {
         override val fieldCols
             get() = FieldCols(
                 nameIdCards = listOf(
-                    "H" to "I",
-                    "J" to "K",
-                    "L" to "M",
-                    "N" to "O",
-                    "P" to "Q",
+                    "I" to "J",
+                    "K" to "L",
+                    "M" to "N",
+                    "O" to "P",
+                    "Q" to "R",
                 ),
                 neighborhood = "A",
                 community = "B",
-                address = "D",
-                type = "F",
+                address = "E",
+                type = "G",
             ) {
-                if (type == "全额救助" || type == "全额") {
-                    type = "全额低保人员"
+                type = if (type == "全额救助" || type == "全额") {
+                    "全额低保人员"
                 } else {
-                    type = "差额低保人员"
+                    "差额低保人员"
                 }
                 detail = "城市"
             }
@@ -389,22 +393,22 @@ class Authenticate : CommandWithHelp() {
         override val fieldCols
             get() = FieldCols(
                 nameIdCards = listOf(
-                    "G" to "I",
-                    "J" to "K",
-                    "L" to "M",
-                    "N" to "O",
-                    "P" to "Q",
-                    "R" to "S",
+                    "H" to "J",
+                    "K" to "L",
+                    "M" to "N",
+                    "O" to "P",
+                    "Q" to "R",
+                    "S" to "T",
                 ),
                 neighborhood = "A",
                 community = "B",
                 address = "D",
-                type = "E",
+                type = "F",
             ) {
-                if (type == "全额救助" || type == "全额") {
-                    type = "全额低保人员"
+                type = if (type == "全额救助" || type == "全额") {
+                    "全额低保人员"
                 } else {
-                    type = "差额低保人员"
+                    "差额低保人员"
                 }
                 detail = "农村"
             }
@@ -420,15 +424,15 @@ class Authenticate : CommandWithHelp() {
                 nameIdCards = listOf(
                     "A" to "B",
                 ),
-                neighborhood = "F",
-                community = "G",
-                address = "H",
-                type = "K",
+                neighborhood = "E",
+                community = "F",
+                address = "G",
+                type = "O",
             ) {
                 detail = type
-                when (type) {
-                    "一级", "二级" -> type = "一二级残疾人员"
-                    "三级", "四级" -> type = "三四级残疾人员"
+                type = when (type) {
+                    "一级", "二级" -> "一二级残疾人员"
+                    "三级", "四级" -> "三四级残疾人员"
                     else -> throw Exception("未知残疾类型")
                 }
             }
