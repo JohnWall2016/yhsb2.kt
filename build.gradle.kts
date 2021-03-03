@@ -26,8 +26,8 @@ dependencies {
 
     implementation("info.picocli:picocli:4.5.2")
 
-    implementation("org.ktorm:ktorm-core:3.2.0")
-    implementation("mysql:mysql-connector-java:8.0.22")
+    implementation("org.ktorm:ktorm-core:3.3.0")
+    implementation("mysql:mysql-connector-java:8.0.23")
 
     testImplementation(kotlin("script-runtime"))
 }

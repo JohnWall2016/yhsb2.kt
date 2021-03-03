@@ -74,14 +74,15 @@ class Authenticate : CommandWithHelp() {
                     it.date eq date
                 }.groupBy {
                     it.idCard
-                }
+                }.toList()
 
                 var index = 1
                 if (month == null) {
-                    historyData.let {
+                    historyData.run {
                         rawDataGroups.forEach { (idCard, groups) ->
                             println("${index++} $idCard")
-                            val data = it.filter {
+
+                            val data = filter {
                                 it.idCard eq idCard
                             }
                             if (data.isNotEmpty()) {
@@ -96,7 +97,7 @@ class Authenticate : CommandWithHelp() {
                                 groups.forEach { rawItem ->
                                     item.merge(rawItem)
                                 }
-                                it.add(item)
+                                this.add(item)
                                 item.flushChanges()
                             }
                         }
@@ -138,13 +139,13 @@ class Authenticate : CommandWithHelp() {
                 val data = if (monthOrAll.toUpperCase() == "ALL") {
                     historyData
                 } else {
-                    monthData
+                    monthData.filter { it.month eq monthOrAll }
                 }
 
+                var index = 1
                 data.forEach {
                     var jbKind: String? = null
                     var isDestitute: String? = null
-                    var i = 1
                     if (!Strings.isNullOrEmpty(it.poverty)) {
                         jbKind = "贫困人口一级"
                         isDestitute = "贫困人口"
@@ -165,11 +166,11 @@ class Authenticate : CommandWithHelp() {
                     var updated = false
                     if (jbKind != null && jbKind != it.jbKind) {
                         if (!Strings.isNullOrEmpty(it.jbKind)) {
-                            println("${i++} ${it.idCard} ${it.name.fillRight(6)} $jbKind <- ${it.jbKind}")
+                            println("${index++} ${it.idCard} ${it.name.fillRight(6)} $jbKind <- ${it.jbKind}")
                             it.jbKind = jbKind
                             it.jbKindLastDate = date
                         } else {
-                            println("${i++} ${it.idCard} ${it.name.fillRight(6)} $jbKind")
+                            println("${index++} ${it.idCard} ${it.name.fillRight(6)} $jbKind")
                             it.jbKind = jbKind
                             it.jbKindLastDate = date
                         }
@@ -469,8 +470,8 @@ class Authenticate : CommandWithHelp() {
         )
         private var date = ""
 
-        @CommandLine.Parameters(
-            paramLabel = "clear",
+        @CommandLine.Option(
+            names = ["-c", "--clear"],
             description = ["是否清除数据表"]
         )
         private var clear = false
@@ -543,8 +544,8 @@ class Authenticate : CommandWithHelp() {
         )
         private var endRow = 0
 
-        @CommandLine.Parameters(
-            paramLabel = "clear",
+        @CommandLine.Option(
+            names = ["-c", "--clear"],
             description = ["是否清除数据表"]
         )
         private var clear = false
@@ -563,7 +564,8 @@ class Authenticate : CommandWithHelp() {
             AuthDb2021.use {
                 joinedPersonData.loadExcel(
                     excel, startRow, endRow,
-                    listOf("E", "A", "B", "C", "F", "G", "I", "K", "L", "O")
+                    listOf("E", "A", "B", "C", "F", "G", "I", "K", "L", "Q"),
+                    printSql = true
                 )
             }
 
