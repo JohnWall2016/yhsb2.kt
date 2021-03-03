@@ -207,33 +207,33 @@ class Authenticate : CommandWithHelp() {
 
                     println("$index ${it.idCard} ${it.name}")
 
-                    sheet.getOrCopyRow(currentRow++, startRow).apply {
-                        getCell("A").setValue(index)
-                        getCell("B").setValue(it.no)
-                        getCell("C").setValue(it.neighborhood)
-                        getCell("D").setValue(it.community)
-                        getCell("E").setValue(it.address)
-                        getCell("F").setValue(it.name)
-                        getCell("G").setValue(it.idCard)
-                        getCell("H").setValue(it.birthDay)
-                        getCell("I").setValue(it.poverty)
-                        getCell("J").setValue(it.povertyDate)
-                        getCell("K").setValue(it.veryPoor)
-                        getCell("L").setValue(it.veryPoorDate)
-                        getCell("M").setValue(it.fullAllowance)
-                        getCell("N").setValue(it.fullAllowanceDate)
-                        getCell("O").setValue(it.shortAllowance)
-                        getCell("P").setValue(it.shortAllowanceDate)
-                        getCell("Q").setValue(it.primaryDisability)
-                        getCell("R").setValue(it.primaryDisabilityDate)
-                        getCell("S").setValue(it.secondaryDisability)
-                        getCell("T").setValue(it.secondaryDisabilityDate)
-                        getCell("U").setValue(it.isDestitute)
-                        getCell("V").setValue(it.jbKind)
-                        getCell("W").setValue(it.jbKindFirstDate)
-                        getCell("X").setValue(it.jbKindLastDate)
-                        getCell("Y").setValue(it.jbState)
-                        getCell("Z").setValue(it.jbStateDate)
+                    sheet.getOrCopyRow(currentRow++, startRow).run {
+                        getOrCreateCell("A").setValue(index)
+                        getOrCreateCell("B").setValue(it.no)
+                        getOrCreateCell("C").setValue(it.neighborhood)
+                        getOrCreateCell("D").setValue(it.community)
+                        getOrCreateCell("E").setValue(it.address)
+                        getOrCreateCell("F").setValue(it.name)
+                        getOrCreateCell("G").setValue(it.idCard)
+                        getOrCreateCell("H").setValue(it.birthDay)
+                        getOrCreateCell("I").setValue(it.poverty)
+                        getOrCreateCell("J").setValue(it.povertyDate)
+                        getOrCreateCell("K").setValue(it.veryPoor)
+                        getOrCreateCell("L").setValue(it.veryPoorDate)
+                        getOrCreateCell("M").setValue(it.fullAllowance)
+                        getOrCreateCell("N").setValue(it.fullAllowanceDate)
+                        getOrCreateCell("O").setValue(it.shortAllowance)
+                        getOrCreateCell("P").setValue(it.shortAllowanceDate)
+                        getOrCreateCell("Q").setValue(it.primaryDisability)
+                        getOrCreateCell("R").setValue(it.primaryDisabilityDate)
+                        getOrCreateCell("S").setValue(it.secondaryDisability)
+                        getOrCreateCell("T").setValue(it.secondaryDisabilityDate)
+                        getOrCreateCell("U").setValue(it.isDestitute)
+                        getOrCreateCell("V").setValue(it.jbKind)
+                        getOrCreateCell("W").setValue(it.jbKindFirstDate)
+                        getOrCreateCell("X").setValue(it.jbKindLastDate)
+                        getOrCreateCell("Y").setValue(it.jbState)
+                        getOrCreateCell("Z").setValue(it.jbStateDate)
                     }
                 }
             }
@@ -586,7 +586,7 @@ class Authenticate : CommandWithHelp() {
 
         @CommandLine.Parameters(
             paramLabel = "date",
-            description = ["数据月份，例如：201912"]
+            description = ["居保数据日期，例如：20191231"]
         )
         private var date = ""
 
@@ -609,7 +609,7 @@ class Authenticate : CommandWithHelp() {
                     if (monthOrAll.toUpperCase() == "ALL") {
                         val dataTable = "fphistorydata"
                         for ((cbState, jfState, jbState) in jbStateMap) {
-                            val sql = "update $dataTable $peopleTable\n" +
+                            val sql = "update $dataTable, $peopleTable\n" +
                                     "    set ${dataTable}.jbcbqk='$jbState',\n" +
                                     "        ${dataTable}.jbcbqkDate='$date'\n" +
                                     " where ${dataTable}.idcard=${peopleTable}.idcard\n" +
@@ -620,10 +620,10 @@ class Authenticate : CommandWithHelp() {
                     } else {
                         val dataTable = "fpmonthdata"
                         for ((cbState, jfState, jbState) in jbStateMap) {
-                            val sql = "update $dataTable $peopleTable\n" +
+                            val sql = "update $dataTable, $peopleTable\n" +
                                     "    set ${dataTable}.jbcbqk='$jbState',\n" +
                                     "        ${dataTable}.jbcbqkDate='$date'\n" +
-                                    " where ${dataTable}.month='$monthOrAll'" +
+                                    " where ${dataTable}.month='$monthOrAll'\n" +
                                     "   and ${dataTable}.idcard=${peopleTable}.idcard\n" +
                                     "   and ${peopleTable}.cbzt='$cbState'\n" +
                                     "   and ${peopleTable}.jfzt='$jfState'\n"
@@ -650,12 +650,12 @@ class Authenticate : CommandWithHelp() {
 
         override fun run() {
             val fileName = if (monthOrAll.toUpperCase() == "ALL") {
-                """D:\精准扶贫\2020年度扶贫数据底册${DateTime.format()}.xlsx"""
+                """D:\特殊缴费\2021年度扶贫数据底册${DateTime.format()}.xlsx"""
             } else {
-                """D:\精准扶贫\${monthOrAll}扶贫数据底册${DateTime.format()}.xlsx"""
+                """D:\特殊缴费\${monthOrAll}扶贫数据底册${DateTime.format()}.xlsx"""
             }
 
-            exportData(monthOrAll, """D:\精准扶贫\雨湖区精准扶贫底册模板.xlsx""", fileName)
+            exportData(monthOrAll, """D:\特殊缴费\雨湖区精准扶贫底册模板.xlsx""", fileName)
         }
     }
 
