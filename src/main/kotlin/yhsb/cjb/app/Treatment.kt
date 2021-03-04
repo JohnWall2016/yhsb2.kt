@@ -62,7 +62,7 @@ class Treatment : CommandWithHelp() {
             result.forEach {
                 val index = currentRow - startRow + 1
 
-                println("$index ${it.idCard} ${it.name} ${it.bz}")
+                println("$index ${it.idCard} ${it.name} ${it.bz ?: ""}")
 
                 sheet.getOrCopyRow(currentRow++, startRow).apply {
                     getCell("A").setValue(index)
@@ -124,7 +124,7 @@ class Treatment : CommandWithHelp() {
                 val xzqh = sheet.getCell(index, "D").getValue()
                 val (dw, cs) = Division.getDwAndCsName(xzqh) ?: throw Exception("未匹配行政区划: $xzqh")
 
-                if (map.containsKey(dw)) {
+                if (!map.containsKey(dw)) {
                     map[dw] = mutableMapOf()
                 }
                 if (map[dw]?.containsKey(cs) == true) {
@@ -225,19 +225,21 @@ class Treatment : CommandWithHelp() {
                     getCell("K8").setValue(payInfo.groupValues[16])
                     getCell("L8").setValue(payInfo.groupValues[17])
                     getCell("M8").setValue(payInfo.groupValues[18])
-                    getCell("A11").setValue(payInfo.groupValues[19])
-                    getCell("B11").setValue(payInfo.groupValues[20])
-                    getCell("C11").setValue(payInfo.groupValues[21])
-                    getCell("D11").setValue(payInfo.groupValues[22])
-                    getCell("E11").setValue(payInfo.groupValues[23])
-                    getCell("F11").setValue(payInfo.groupValues[24])
-                    getCell("G11").setValue(payInfo.groupValues[25])
-                    getCell("H11").setValue(payInfo.groupValues[26])
-                    getCell("I11").setValue(payInfo.groupValues[27])
-                    getCell("J11").setValue(payInfo.groupValues[28])
-                    getCell("K11").setValue(payInfo.groupValues[29])
-                    getCell("L11").setValue(payInfo.groupValues[30])
-                    getCell("M11").setValue(payInfo.groupValues[31])
+                    getCell("N8").setValue(payInfo.groupValues[19])
+                    getCell("A11").setValue(payInfo.groupValues[20])
+                    getCell("B11").setValue(payInfo.groupValues[21])
+                    getCell("C11").setValue(payInfo.groupValues[22])
+                    getCell("D11").setValue(payInfo.groupValues[23])
+                    getCell("E11").setValue(payInfo.groupValues[24])
+                    getCell("F11").setValue(payInfo.groupValues[25])
+                    getCell("G11").setValue(payInfo.groupValues[26])
+                    getCell("H11").setValue(payInfo.groupValues[27])
+                    getCell("I11").setValue(payInfo.groupValues[28])
+                    getCell("J11").setValue(payInfo.groupValues[29])
+                    getCell("K11").setValue(payInfo.groupValues[30])
+                    getCell("L11").setValue(payInfo.groupValues[31])
+                    getCell("M11").setValue(payInfo.groupValues[32])
+                    getCell("N11").setValue(payInfo.groupValues[33])
                     getCell("I12").setValue(DateTime.format("yyyy-MM-dd HH:mm:ss"))
 
                     if (biResult.isNotEmpty()) {

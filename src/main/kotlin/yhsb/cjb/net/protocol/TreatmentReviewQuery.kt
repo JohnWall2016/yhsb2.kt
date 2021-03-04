@@ -76,7 +76,7 @@ class TreatmentReviewQuery(
         @SerializedName("aic160")
         val payMonth: Int,
 
-        val bz: String,
+        val bz: String?,
 
         val aaz170: Int,
         val aaz159: Int,
@@ -94,6 +94,7 @@ class TreatmentReviewQuery(
                 Config.cjbSession.getInt("port"),
             ).use {
                 val content = it.getHttp(treatmentInfoUrl).replace("""[\r\n\t]""".toRegex(), "")
+                //println(content)
                 rePaymentInfo.toRegex().find(content)
             }
         }
@@ -122,7 +123,7 @@ class TreatmentReviewQuery(
         <td height="77" align="center" rowspan="2" id="15">缴费起始年月</td>
         <td align="center" rowspan="2" id="16">累计缴费年限</td>
         <td align="center" rowspan="2" colspan="2" id="17">个人账户累计存储额</td>
-        <td height="25" align="center" colspan="9" id="18">其中</td>
+        <td height="25" align="center" colspan="10" id="18">其中</td>
       </tr>
       <tr id="78">
         <td height="30" align="center" id="19">个人缴费</td>
@@ -132,6 +133,7 @@ class TreatmentReviewQuery(
         <td align="center" id="23">集体补助</td>
         <td align="center" id="24">被征地补助</td>
         <td align="center" id="24">退捕渔民补助</td>
+        <td align="center" id="24">核工业补助</td>
         <td align="center" id="25">政府代缴</td>
         <td align="center" id="26">利息</td>
       </tr>
@@ -146,6 +148,7 @@ class TreatmentReviewQuery(
         <td align="center" id="34">(.+?)</td>
         <td align="center" id="35">(.+?)</td>
         <td align="center" id="35">(.+?)</td>
+        <td align="center" id="35">(.+?)</td>
         <td align="center" id="36">(.+?)</td>
         <td align="center" id="37">(.+?)</td>
       </tr>
@@ -155,7 +158,7 @@ class TreatmentReviewQuery(
         </td>
         <td align="center" rowspan="2" id="39">月养老金</td>
         <td height="29" align="center" colspan="5" id="40">其中：基础养老金</td>
-        <td align="center" colspan="6" id="41">个人账户养老金</td>
+        <td align="center" colspan="7" id="41">个人账户养老金</td>
       </tr>
       <tr id="81">
         <td height="31" align="center" id="42">国家补贴</td>
@@ -168,6 +171,7 @@ class TreatmentReviewQuery(
         <td align="center" id="49">集体补助部分</td>
         <td align="center" id="50">被征地补助部分</td>
         <td align="center" id="50">退捕渔民补助部分</td>
+        <td align="center" id="50">核工业补助部分</td>
         <td align="center" id="51">政府代缴部分</td>
       </tr>
       <tr class="detail" component="detail" id="82">
@@ -183,7 +187,9 @@ class TreatmentReviewQuery(
         <td align="center" id="61">(.+?)</td>
         <td align="center" id="62">(.+?)</td>
         <td align="center" id="62">(.+?)</td>
+        <td align="center" id="62">(.+?)</td>
         <td align="center" id="63">(.+?)</td>
-      </tr>""".replace("""[\r\n\t]""".toRegex(), "")
+      </tr>"""
+      .replace("""[\r\n\t]""".toRegex(), "")
     }
 }

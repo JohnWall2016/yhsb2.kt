@@ -1,6 +1,7 @@
 package yhsb.cjb.net
 
 import yhsb.cjb.net.protocol.*
+import java.lang.Exception
 
 Session.use {
     /*
@@ -28,5 +29,12 @@ Session.use {
     println(getPauseInfoByIdCard("430302191912225020"))
     println(getStopInfoByIdCard("430302192603161021"))
     println(getStopInfoByIdCard("430321196602051581"))*/
-    println(getStopInfoByIdCard("430321195209020514", true))
+    // println(getStopInfoByIdCard("430321195209020514", true))
+
+    val idCard = "430311196102011521"
+    sendService(TreatmentReviewQuery(idCard, "0"))
+    val result = getResult<TreatmentReviewQuery.Item>()
+    if (result.isNotEmpty()) {
+        println(result.first().getTreatmentInfoMatch())
+    }
 }
