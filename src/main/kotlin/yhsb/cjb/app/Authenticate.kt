@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.ktorm.dsl.*
 import org.ktorm.entity.*
+import org.ktorm.schema.monthDay
 import picocli.CommandLine
 import yhsb.base.cmd.CommandWithHelp
 import yhsb.base.datetime.DateTime
@@ -44,7 +45,7 @@ class Authenticate : CommandWithHelp() {
             AuthDb2021.use {
                 rawData.run {
                     items.withIndex().forEach { (index, item) ->
-                        println("${index + 1} ${item.idCard} ${item.name.fillRight(6)} ${item.type}")
+                        print("${index + 1} ${item.idCard} ${item.name.fillRight(6)} ${item.type} ")
 
                         if (item.idCard.isNotEmpty()) {
                             val result = filter {
@@ -59,10 +60,14 @@ class Authenticate : CommandWithHelp() {
                                     it.update(item)
                                     it.flushChanges()
                                 }
+                                println("更新")
                             } else {
                                 this.add(item)
                                 item.flushChanges()
+                                println("新增")
                             }
+                        } else {
+                            println("数据无效")
                         }
                     }
                 }
@@ -187,7 +192,7 @@ class Authenticate : CommandWithHelp() {
         }
 
         fun exportData(monthOrAll: String, templateExcel: String, saveExcel: String) {
-            println("开始导出扶贫底册: ${monthOrAll}扶贫数据=>${saveExcel}")
+            println("开始导出底册: $saveExcel")
 
             val workbook = Excel.load(templateExcel)
             val sheet = workbook.getSheetAt(0)
@@ -217,39 +222,40 @@ class Authenticate : CommandWithHelp() {
                     println("$index ${it.idCard} ${it.name}")
 
                     sheet.getOrCopyRow(currentRow++, startRow).run {
-                        getOrCreateCell("A").setValue(index)
-                        getOrCreateCell("B").setValue(it.no)
-                        getOrCreateCell("C").setValue(it.neighborhood)
-                        getOrCreateCell("D").setValue(it.community)
-                        getOrCreateCell("E").setValue(it.address)
-                        getOrCreateCell("F").setValue(it.name)
-                        getOrCreateCell("G").setValue(it.idCard)
-                        getOrCreateCell("H").setValue(it.birthDay)
-                        getOrCreateCell("I").setValue(it.poverty)
-                        getOrCreateCell("J").setValue(it.povertyDate)
-                        getOrCreateCell("K").setValue(it.veryPoor)
-                        getOrCreateCell("L").setValue(it.veryPoorDate)
-                        getOrCreateCell("M").setValue(it.fullAllowance)
-                        getOrCreateCell("N").setValue(it.fullAllowanceDate)
-                        getOrCreateCell("O").setValue(it.shortAllowance)
-                        getOrCreateCell("P").setValue(it.shortAllowanceDate)
-                        getOrCreateCell("Q").setValue(it.primaryDisability)
-                        getOrCreateCell("R").setValue(it.primaryDisabilityDate)
-                        getOrCreateCell("S").setValue(it.secondaryDisability)
-                        getOrCreateCell("T").setValue(it.secondaryDisabilityDate)
-                        getOrCreateCell("U").setValue(it.isDestitute)
-                        getOrCreateCell("V").setValue(it.jbKind)
-                        getOrCreateCell("W").setValue(it.jbKindFirstDate)
-                        getOrCreateCell("X").setValue(it.jbKindLastDate)
-                        getOrCreateCell("Y").setValue(it.jbState)
-                        getOrCreateCell("Z").setValue(it.jbStateDate)
+                        getCell("A").setValue(index)
+                        getCell("B").setValue(it.no)
+                        getCell("C").setValue(it.neighborhood)
+                        getCell("D").setValue(it.community)
+                        getCell("E").setValue(it.address)
+                        getCell("F").setValue(it.name)
+                        getCell("G").setValue(it.idCard)
+                        getCell("H").setValue(it.birthDay)
+                        getCell("I").setValue(it.poverty)
+                        getCell("J").setValue(it.povertyDate)
+                        getCell("K").setValue(it.veryPoor)
+                        getCell("L").setValue(it.veryPoorDate)
+                        getCell("M").setValue(it.fullAllowance)
+                        getCell("N").setValue(it.fullAllowanceDate)
+                        getCell("O").setValue(it.shortAllowance)
+                        getCell("P").setValue(it.shortAllowanceDate)
+                        getCell("Q").setValue(it.primaryDisability)
+                        getCell("R").setValue(it.primaryDisabilityDate)
+                        getCell("S").setValue(it.secondaryDisability)
+                        getCell("T").setValue(it.secondaryDisabilityDate)
+                        getCell("U").setValue(it.isDestitute)
+                        getCell("V").setValue(it.jbKind)
+                        getCell("W").setValue(it.jbKindFirstDate)
+                        getCell("X").setValue(it.jbKindLastDate)
+                        getCell("Y").setValue(it.jbState)
+                        getCell("Z").setValue(it.jbStateDate)
+                        getCell("AA").setBlank()
                     }
                 }
             }
 
             workbook.save(saveExcel)
 
-            println("结束导出扶贫底册: ${monthOrAll}扶贫数据=>${saveExcel}")
+            println("结束导出底册: $saveExcel")
         }
     }
 
@@ -260,31 +266,59 @@ class Authenticate : CommandWithHelp() {
     abstract class ImportCommand : CommandWithHelp() {
         @CommandLine.Parameters(
             paramLabel = "date",
-            description = ["数据月份, 例如: 201912"]
+            description = ["数据月份, 例如: 201912"],
+            index = "0"
         )
         protected var date = ""
 
         @CommandLine.Parameters(
             paramLabel = "excel",
-            description = ["excel表格文件路径"]
+            description = ["excel表格文件路径"],
+            index = "1",
+            arity = "0..1"
         )
         protected var excel = ""
 
         @CommandLine.Parameters(
             paramLabel = "startRow",
-            description = ["开始行(从1开始)"]
+            description = ["开始行(从1开始)"],
+            index = "2",
+            arity = "0..1"
         )
-        protected var startRow = 0
+        protected var startRow = -1
 
         @CommandLine.Parameters(
             paramLabel = "endRow",
-            description = ["结束行(包含在内)"]
+            description = ["结束行(包含在内)"],
+            index = "3",
+            arity = "0..1"
         )
-        protected var endRow = 0
+        protected var endRow = -1
+
+        @CommandLine.Option(
+            names = ["-c", "--clear"],
+            description = ["是否清除已有数据"]
+        )
+        private var clear = false
+
+        @CommandLine.Option(
+            names = ["-l", "--clear-only"],
+            description = ["是否清除已有数据"]
+        )
+        private var clearOnly = false
 
         override fun run() {
-            importRawData(fetch())
+            if (clear || clearOnly) {
+                println("开始清除已有数据")
+                clear()
+                println("结束清除已有数据")
+            }
+            if (!clearOnly) {
+                importRawData(fetch())
+            }
         }
+
+        abstract fun clear()
 
         data class FieldCols(
             val nameIdCards: List<Pair<String, String>>,
@@ -299,6 +333,8 @@ class Authenticate : CommandWithHelp() {
             iterator {
                 val workbook = Excel.load(excel)
                 val sheet = workbook.getSheetAt(0)
+
+                if (startRow < 1 || endRow < startRow) return@iterator
 
                 for (index in (startRow - 1) until endRow) {
                     sheet.getRow(index)?.apply {
@@ -355,6 +391,14 @@ class Authenticate : CommandWithHelp() {
         description = ["导入特困人员数据"]
     )
     class VeryPoor : ImportCommand() {
+        override fun clear() {
+            AuthDb2021.use {
+                delete(RawData) {
+                    it.date eq date and (it.type eq "特困人员")
+                }
+            }
+        }
+
         override val fieldCols
             get() = FieldCols(
                 nameIdCards = listOf("G" to "H"),
@@ -372,6 +416,14 @@ class Authenticate : CommandWithHelp() {
         description = ["导入城市低保数据"]
     )
     class CityAllowance : ImportCommand() {
+        override fun clear() {
+            AuthDb2021.use {
+                delete(RawData) {
+                    it.date eq date and (it.type like "%低保人员") and (it.detail eq "城市")
+                }
+            }
+        }
+
         override val fieldCols
             get() = FieldCols(
                 nameIdCards = listOf(
@@ -400,6 +452,14 @@ class Authenticate : CommandWithHelp() {
         description = ["导入农村低保数据"]
     )
     class CountryAllowance : ImportCommand() {
+        override fun clear() {
+            AuthDb2021.use {
+                delete(RawData) {
+                    it.date eq date and (it.type like "%低保人员") and (it.detail eq "农村")
+                }
+            }
+        }
+
         override val fieldCols
             get() = FieldCols(
                 nameIdCards = listOf(
@@ -429,6 +489,14 @@ class Authenticate : CommandWithHelp() {
         description = ["导入残疾人员数据"]
     )
     class Disability : ImportCommand() {
+        override fun clear() {
+            AuthDb2021.use {
+                delete(RawData) {
+                    it.date eq date and (it.type like "%残疾人员")
+                }
+            }
+        }
+
         override val fieldCols
             get() = FieldCols(
                 nameIdCards = listOf(
@@ -659,12 +727,12 @@ class Authenticate : CommandWithHelp() {
 
         override fun run() {
             val fileName = if (monthOrAll.toUpperCase() == "ALL") {
-                """D:\特殊缴费\2021年度扶贫数据底册${DateTime.format()}.xlsx"""
+                """D:\特殊缴费\${DateTime.format("yyyy")}年殊缴费类型数据底册${DateTime.format()}.xlsx"""
             } else {
-                """D:\特殊缴费\${monthOrAll}扶贫数据底册${DateTime.format()}.xlsx"""
+                """D:\特殊缴费\${monthOrAll}殊缴费类型数据底册${DateTime.format()}.xlsx"""
             }
 
-            exportData(monthOrAll, """D:\特殊缴费\雨湖区精准扶贫底册模板.xlsx""", fileName)
+            exportData(monthOrAll, """D:\特殊缴费\特殊缴费类型数据底册模板.xlsx""", fileName)
         }
     }
 
@@ -691,10 +759,10 @@ class Authenticate : CommandWithHelp() {
         }
 
         override fun run() {
-            val template = """D:\精准扶贫\批量信息变更模板.xls"""
+            val template = """D:\特殊缴费\批量信息变更模板.xls"""
             val rowsPerExcel = 500
 
-            if (Files.exists(Paths.get(outputDir))) {
+            if (!Files.exists(Paths.get(outputDir))) {
                 Files.createDirectory(Paths.get(outputDir))
             } else {
                 println("目录已存在: $outputDir")
@@ -711,16 +779,10 @@ class Authenticate : CommandWithHelp() {
                         .innerJoin(JoinedPersonData, on = HistoryData.idCard eq JoinedPersonData.idCard)
                         .select(JoinedPersonData.name, JoinedPersonData.idCard)
                         .where {
-                            HistoryData.jbKind eq type
-                        }
-                        .where {
-                            JoinedPersonData.jbKind notEq code
-                        }
-                        .where {
-                            JoinedPersonData.cbState eq "1"
-                        }
-                        .where {
-                            JoinedPersonData.jfState eq "1"
+                            HistoryData.jbKind eq type and
+                                    (JoinedPersonData.jbKind notEq code) and
+                                    (JoinedPersonData.cbState eq "1") and
+                                    (JoinedPersonData.jfState eq "1")
                         }.map {
                             ChangedData(it[JoinedPersonData.name], it[JoinedPersonData.idCard], code)
                         }
@@ -751,9 +813,9 @@ class Authenticate : CommandWithHelp() {
                                 getCell("E").setValue(it.name)
                                 getCell("J").setValue(it.code)
                             }
-                            if (workbook != null) {
-                                workbook?.save(Paths.get(outputDir, "${type}批量信息变更表${++files}.xls"))
-                            }
+                        }
+                        if (workbook != null) {
+                            workbook?.save(Paths.get(outputDir, "${type}批量信息变更表${++files}.xls"))
                         }
                         println("结束导出 $type 批量信息变更表: $i 条")
                     }

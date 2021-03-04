@@ -15,10 +15,6 @@ import java.nio.file.Files
 import java.sql.Connection
 
 open class DbSession(private val configPrefix: String) {
-    init {
-        Class.forName("yhsb.base.db.MySqlDialect")
-    }
-
     fun getConnection(): Database {
         val cfg = Config.load("$configPrefix.dataSource").toMap()
         return Database.connect(

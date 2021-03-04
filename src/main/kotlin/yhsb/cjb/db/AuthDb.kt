@@ -1,6 +1,5 @@
 package yhsb.cjb.db
 
-import com.google.common.base.Strings
 import org.ktorm.database.Database
 import org.ktorm.entity.*
 import org.ktorm.schema.Table

@@ -238,6 +238,8 @@ fun Cell?.setValue(v: Double?) = if (v != null) this?.setCellValue(v) else this?
 fun Cell?.setValue(v: BigDecimal?) = if (v != null) this?.setCellValue(v.toDouble()) else this?.setBlank()
 fun Cell?.setValue(v: Int?) = if (v != null) this?.setCellValue(v.toDouble()) else this?.setBlank()
 
+fun Cell?.setBlank() = this?.setBlank()
+
 class CellRef(
     val row: Int, val column: Int,
     anchored: Boolean = false,
