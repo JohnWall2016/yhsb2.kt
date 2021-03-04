@@ -32,7 +32,7 @@ class PaymentQuery(
     val bie013 = ""
 
     data class Item(
-        /** 支付对象类型: "3" - 个人支付*/
+        /** 支付对象类型: "1" - 月度银行代发, "3" - 个人支付*/
         @SerializedName("aaa079")
         val objectType: String,
 

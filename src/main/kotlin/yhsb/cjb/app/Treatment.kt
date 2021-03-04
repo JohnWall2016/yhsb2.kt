@@ -1,25 +1,28 @@
 package yhsb.cjb.app
 
+import com.google.common.base.Strings
 import picocli.CommandLine
 import yhsb.base.cmd.CommandWithHelp
 import yhsb.base.datetime.DateTime
 import yhsb.base.excel.*
+import yhsb.base.text.fillRight
 import yhsb.base.text.stripPrefix
 import yhsb.base.text.times
 import yhsb.cjb.net.Session
-import yhsb.cjb.net.protocol.BankInfoQuery
-import yhsb.cjb.net.protocol.TreatmentReviewQuery
-import yhsb.cjb.net.protocol.Division
+import yhsb.cjb.net.protocol.*
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.text.Collator
+import java.util.*
 
 @CommandLine.Command(
     description = ["信息核对报告表和养老金计算表生成程序"],
     subcommands = [
         Treatment.Download::class,
-        Treatment.Split::class
+        Treatment.Split::class,
+        Treatment.FailedPayList::class
     ]
 )
 class Treatment : CommandWithHelp() {
@@ -263,6 +266,70 @@ class Treatment : CommandWithHelp() {
                 workbook.save(outDir.resolve("${name}[$idCard]养老金计算表.xlsx"))
             } else {
                 throw Exception("未查到该人员核定数据")
+            }
+        }
+    }
+
+    @CommandLine.Command(
+        name = "failList",
+        description = ["从业务系统下载支付失败人员名单"]
+    )
+    class FailedPayList : CommandWithHelp() {
+        @CommandLine.Parameters(
+            description = ["支付年月, 格式: YYYYMM, 例如: 202101"]
+        )
+        private var date = ""
+
+        private val outputDir = """D:\待遇核定"""
+        private val template = """$outputDir\待遇支付失败人员名单模板.xls"""
+
+        override fun run() {
+            val (year, month) = DateTime.split(date)
+
+            val items = Session.use {
+                sendService(PaymentQuery(date, state = "0"))
+                val result = getResult<PaymentQuery.Item>()
+
+                val items = mutableListOf<PaymentPersonalDetailQuery.Item>()
+                result.filter {
+                    it.objectType == "1"
+                }.forEach { item ->
+                    sendService(PaymentPersonalDetailQuery(item))
+                    val ppResult = getResult<PaymentPersonalDetailQuery.Item>()
+                    items.addAll(ppResult)
+                }
+                items.filter {
+                    !Strings.isNullOrEmpty(it.idCard)
+                }.sortedWith { e1, e2 ->
+                    Collator.getInstance(Locale.CHINESE).compare(e1.csName, e2.csName)
+                }
+            }
+            if (items.isNotEmpty()) {
+                val workbook = Excel.load(template)
+                val sheet = workbook.getSheetAt(0)
+                val startRow = 1
+                var currentRow = startRow
+
+                println("开始导出数据")
+
+                items.withIndex().forEach { (index, item) ->
+                    println("${index + 1} ${item.name.fillRight(6)} ${item.idCard} ${item.csName}")
+                    sheet.getOrCopyRow(currentRow++, startRow).apply {
+                        getCell("A").setValue(item.csName)
+                        getCell("B").setValue(item.name)
+                        getCell("C").setValue(item.idCard)
+                    }
+                }
+
+                val path = Paths.get(
+                    outputDir,
+                    "${year}年${month.stripPrefix("0")}待遇支付失败人员名单${DateTime.format()}.xls"
+                )
+                println("保存: $path")
+
+                workbook.save(path)
+
+                println("结束导出数据")
             }
         }
     }

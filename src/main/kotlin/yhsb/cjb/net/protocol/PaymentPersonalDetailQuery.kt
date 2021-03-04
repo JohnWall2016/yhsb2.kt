@@ -74,6 +74,9 @@ class PaymentPersonalDetailQuery(
         val amount: BigDecimal,
     
         @SerializedName("aaa121")
-        val type: PayType
+        val type: PayType,
+
+        @SerializedName("aaf103")
+        val csName: String
     )
 }
