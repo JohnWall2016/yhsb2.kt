@@ -323,7 +323,7 @@ class Treatment : CommandWithHelp() {
 
                 val path = Paths.get(
                     outputDir,
-                    "${year}年${month.stripPrefix("0")}待遇支付失败人员名单${DateTime.format()}.xls"
+                    "${year}年${month.stripPrefix("0")}月待遇支付失败人员名单${DateTime.format()}.xls"
                 )
                 println("保存: $path")
 
