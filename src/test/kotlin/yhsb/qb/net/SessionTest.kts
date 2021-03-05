@@ -9,18 +9,18 @@ Session.use("qqb") {
     sendService(AgencyCodeQuery())
     val acResult = getResult<AgencyCodeQuery.Item>()
 
-    fun getAgencyCode(name: String) = acResult.resultSet.find {
+    fun getAgencyCode(name: String) = acResult.resultSet?.find {
         it.name == name
     }?.code ?: throw Exception("Cannot find agency code")
 
-    sendService(JoinedPersonInProvinceQuery("430302195806251012"))
+    sendService(JoinedPersonInProvinceQuery("430302195806251012")) // 430311195901013529
     val jpResult = getResult<JoinedPersonInProvinceQuery.Item>()
 
-    jpResult.resultSet.forEach {
+    jpResult.resultSet?.forEach {
         println(it)
 
         sendService(RetiredPersonQuery(it.idCard, getAgencyCode(it.agencyName)))
         val rpResult = getResult<RetiredPersonQuery.Item>()
-        rpResult.resultSet.forEach(::println)
+        rpResult.resultSet?.forEach(::println)
     }
 }
