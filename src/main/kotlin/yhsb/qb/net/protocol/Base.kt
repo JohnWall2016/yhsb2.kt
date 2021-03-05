@@ -110,7 +110,7 @@ class OutBody<T>(
 
 data class OutBusiness<T>(
     @AttrNode("result", "result")
-    val result: String,
+    val result: String?,
 
     @AttrNode("result", "row_count")
     val rowCount: Int?,
@@ -119,7 +119,7 @@ data class OutBusiness<T>(
     val querySql: String,
 
     @Node("resultset", Filter::class)
-    val resultSet: ResultSet<T>,
+    val resultSet: ResultSet<T>?,
 
     @Node("resultset", NoFilter::class)
     val otherResultSets: List<ResultSet<T>>

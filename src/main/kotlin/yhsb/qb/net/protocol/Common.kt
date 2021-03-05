@@ -7,7 +7,8 @@ class SbState : MapField() {
     override fun getValueMap() = mapOf(
         "1" to "在职",
         "2" to "退休",
-        "3" to "终止"
+        "3" to "终止", //?
+        "4" to "终止", //?
     )
 }
 
