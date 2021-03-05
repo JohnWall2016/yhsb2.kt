@@ -10,6 +10,7 @@ import yhsb.base.text.stripPrefix
 import yhsb.base.text.times
 import yhsb.cjb.net.Session
 import yhsb.cjb.net.protocol.*
+import yhsb.cjb.net.protocol.Division.groupByDwAndCsName
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Path
@@ -122,20 +123,11 @@ class Treatment : CommandWithHelp() {
             val sheet = workbook.getSheetAt(0)
 
             println("生成分组映射表")
-            val map = mutableMapOf<String, MutableMap<String, MutableList<Int>>>()
-            for (index in (startRow - 1) until endRow) {
-                val xzqh = sheet.getCell(index, "D").getValue()
-                val (dw, cs) = Division.getDwAndCsName(xzqh) ?: throw Exception("未匹配行政区划: $xzqh")
-
-                if (!map.containsKey(dw)) {
-                    map[dw] = mutableMapOf()
+            val map = iterator {
+                for (index in (startRow - 1) until endRow) {
+                    yield(Pair(sheet.getCell(index, "D").getValue(), index))
                 }
-                if (map[dw]?.containsKey(cs) == true) {
-                    map[dw]?.get(cs)?.add(index)
-                } else {
-                    map[dw]?.set(cs, mutableListOf(index))
-                }
-            }
+            }.groupByDwAndCsName()
 
             println("生成分组目录并分别生成信息核对报告表")
             if (Files.exists(outputDir)) {

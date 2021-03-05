@@ -149,6 +149,27 @@ object Division {
         }
         return null
     }
+
+    fun <T> Iterator<Pair<String, T>>.groupByDwName(): Map<String, List<T>> {
+        val map = mutableMapOf<String, MutableList<T>>()
+        forEach { (division, data) ->
+            val dw = getDwName(division) ?: throw Exception("未匹配行政区划: $division")
+            val list = map.getOrPut(dw) { mutableListOf() }
+            list.add(data)
+        }
+        return map
+    }
+
+    fun <T> Iterator<Pair<String, T>>.groupByDwAndCsName(): Map<String, Map<String, List<T>>> {
+        val map = mutableMapOf<String, MutableMap<String, MutableList<T>>>()
+        forEach { (division, data) ->
+            val (dw, cs) = getDwAndCsName(division) ?: throw Exception("未匹配行政区划: $division")
+            val subMap = map.getOrPut(dw) { mutableMapOf() }
+            val list = subMap.getOrPut(cs) { mutableListOf() }
+            list.add(data)
+        }
+        return map
+    }
 }
 
 interface DivisionName {
