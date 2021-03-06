@@ -135,12 +135,12 @@ class Treatment : CommandWithHelp() {
             }
             Files.createDirectory(outputDir)
 
-            map.keys.forEach { dw ->
+            for ((dw, csMap) in map) {
                 println("$dw:")
                 Files.createDirectory(outputDir.resolve(dw))
 
-                map[dw]?.keys?.forEach { cs ->
-                    println("  $cs: ${map[dw]?.get(cs)}")
+                for ((cs, indexes) in csMap) {
+                    println("  $cs: $indexes")
                     Files.createDirectory(outputDir.resolve(Paths.get(dw, cs)))
 
                     val outWorkbook = Excel.load(infoExcel)
@@ -148,7 +148,7 @@ class Treatment : CommandWithHelp() {
                     val startRow = 3
                     var currentRow = 3
 
-                    map[dw]?.get(cs)?.forEach { rowIndex ->
+                    indexes.forEach { rowIndex ->
                         val index = currentRow - startRow + 1
                         val inRow = sheet.getRow(rowIndex)
 
@@ -166,9 +166,9 @@ class Treatment : CommandWithHelp() {
 
             println("\n按分组生成养老金养老金计算表")
             Session.use {
-                map.keys.forEach { dw ->
-                    map[dw]?.keys?.forEach { cs ->
-                        map[dw]?.get(cs)?.forEach { index ->
+                for ((dw, csMap) in map) {
+                    for ((cs, indexes) in csMap) {
+                        indexes.forEach { index ->
                             val row = sheet.getRow(index)
                             val name = row.getCell("B").getValue()
                             val idCard = row.getCell("C").getValue()
@@ -317,7 +317,7 @@ class Treatment : CommandWithHelp() {
                     outputDir,
                     "${year}年${month.stripPrefix("0")}月待遇支付失败人员名单${DateTime.format()}.xls"
                 )
-                println("保存: $path")
+                println("\n保存: $path")
 
                 workbook.save(path)
 
