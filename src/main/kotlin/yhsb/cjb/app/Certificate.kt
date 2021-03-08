@@ -58,7 +58,7 @@ class Certificate : CommandWithHelp() {
             val workbook = Excel.load(excel)
             val sheet = workbook.getSheetAt(0)
 
-            data class Item(val divisionName: String, val idCard: String, val name: String, val sex: String)
+            data class Item(val divisionName: String, val idCard: String, val name: String, val sex: String, val expire: String)
 
             val map = iterator {
                 ((startRow - 1) until endRow).forEach {
@@ -69,13 +69,15 @@ class Certificate : CommandWithHelp() {
                         val sex = getCell("E").getValue().run {
                             if (this == "1") "男" else "女"
                         }
+                        val expire = getCell("I").getValue()
 
                         Pair(
                             divisionName, Item(
                                 divisionName,
                                 idCard,
                                 name,
-                                sex
+                                sex,
+                                expire
                             )
                         )
                     })
@@ -111,6 +113,7 @@ class Certificate : CommandWithHelp() {
                             getCell("C").setValue(it.sex)
                             getCell("D").setValue(it.idCard)
                             getCell("E").setValue(it.divisionName)
+                            getCell("M").setValue("到期时间:${it.expire}")
                         }
                     }
 

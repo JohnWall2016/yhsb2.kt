@@ -62,10 +62,11 @@ fun Sheet.createRow(
     )
     var newRow = getRow(targetRowIndex)
     val srcRow = getRow(sourceRowIndex)
-    if (newRow != null) {
-        shiftRows(targetRowIndex, lastRowNum, 1, true, false)
+    if (newRow == null) {
+        //shiftRows(targetRowIndex, lastRowNum, 1, true, false)
+        newRow = createRow(targetRowIndex)
     }
-    newRow = createRow(targetRowIndex)
+
     newRow.height = srcRow.height
     for (idx in srcRow.firstCellNum until srcRow
         .lastCellNum) {
