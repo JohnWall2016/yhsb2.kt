@@ -109,6 +109,14 @@ fun Sheet.createRow(
     return newRow
 }
 
+/**
+ * Get the row if [targetRowIndex] equals [sourceRowIndex] or
+ * copy a row from the row of [sourceRowIndex].
+ *
+ * @param targetRowIndex the index of the row got or copied to, from 0.
+ * @param sourceRowIndex the index of the row got or copied from, from 0.
+ * @param clearValue if clear the values from the copied row.
+ */
 fun Sheet.getOrCopyRow(
     targetRowIndex: Int,
     sourceRowIndex: Int,

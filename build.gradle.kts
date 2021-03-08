@@ -69,6 +69,10 @@ execTask("cjb.auth", "城居参保身份认证程序") {
     main = "yhsb.cjb.app.Authenticate"
 }
 
+execTask("cjb.cert", "资格认证表格生成程序") {
+    main = "yhsb.cjb.app.Certificate"
+}
+
 task("list") {
     doLast {
         val len = execTasks.keys.fold(0) { acc, name ->
