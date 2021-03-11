@@ -1,2 +1,2 @@
 @echo off
-kotlin -script runapp.kts -- %*
+kotlin runapp.kts -- %*
